@@ -1,6 +1,6 @@
-#include "events.h"
+#pragma once
 
-#include <sstream>
+#include "events.h"
 
 class KeyEvent : public Event
 {

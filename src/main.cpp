@@ -1,5 +1,4 @@
-#include "Engine/core/application.h"
-#include "Engine/core/log.h"
+#include <Fahren.h>
 
 int main() 
 {

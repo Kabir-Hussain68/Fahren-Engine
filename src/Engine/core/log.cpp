@@ -1,5 +1,7 @@
 #include "log.h"
 
+#include "fhpch.h"
+
 std::shared_ptr<spdlog::logger> Log::m_CoreLogger;
 std::shared_ptr<spdlog::logger> Log::m_ClientLogger;
 

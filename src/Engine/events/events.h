@@ -1,5 +1,7 @@
-#include <string>
-#include <functional>
+#pragma once
+
+#include "Engine/core/log.h"
+
 
 #define BIT(x) (1 << x)
 

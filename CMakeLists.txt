@@ -12,16 +12,23 @@ find_package(spdlog REQUIRED)
 
 add_executable(OpenGLEngine
     src/main.cpp
+    src/Fahren.h
     src/Engine/core/application.cpp
     src/Engine/core/log.cpp
     src/Engine/events/events.h
     src/Engine/events/applicationEvent.h
     src/Engine/events/mouseEvent.h
     src/Engine/events/keyEvent.h
+    src/Engine/core/window.cpp
+    src/Platform/windows/linuxWindow.cpp
 )
 
 target_include_directories(OpenGLEngine PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+)
+
+target_precompile_headers(OpenGLEngine PRIVATE
+    src/fhpch.h
 )
 
 target_link_libraries(OpenGLEngine PRIVATE

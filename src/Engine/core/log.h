@@ -1,5 +1,5 @@
+#pragma once
 
-#include <memory>
 #include "spdlog/spdlog.h"
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -29,3 +29,12 @@ public:
 #define FH_WARN(...)          Log::getClientLogger()->warn(__VA_ARGS__)
 #define FH_ERROR(...)         Log::getClientLogger()->error(__VA_ARGS__)
 #define FH_CRITICAL(...)      Log::getClientLogger()->critical(__VA_ARGS__)
+
+//Asserts
+#ifdef FH_ENABLE_ASSERTS
+    #define FH_ASSERT(x, ...) {if(!(x)) { FH_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); __debugbreak(); } }
+    #define FH_CORE_ASSERT(x, ...) {if(!(x)) { FH_CORE_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); __debugbreak(); } }
+#else
+    #define FH_ASSERT(x, ...)
+    #define FH_CORE_ASSERT(x, ...)
+#endif
