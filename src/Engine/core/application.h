@@ -8,6 +8,8 @@
 class Application
 {
 private:
+    static Application* m_Instance;
+
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
     LayerStack m_LayerStack;
@@ -23,4 +25,7 @@ public:
 
     void pushLayer(Layer* layer);
     void pushOverlay(Layer* layer);
+
+    inline static Application& getApplication() { return *m_Instance; }
+    inline Window& getWindow() { return *m_Window; }
 };

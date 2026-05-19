@@ -11,6 +11,7 @@ find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 
 add_subdirectory(requisites/GLAD)
+add_subdirectory(requisites/imgui)
 
 add_executable(OpenGLEngine
    src/main.cpp 
@@ -28,6 +29,8 @@ add_executable(OpenGLEngine
    src/Engine/events/keyEvent.h 
 
    src/Platform/windows/linuxWindow.cpp 
+
+   src/Platform/OpenGL/imGuiOpenGLRenderer.cpp
 )
 
 target_include_directories(OpenGLEngine PRIVATE
@@ -39,6 +42,7 @@ target_precompile_headers(OpenGLEngine PRIVATE
 )
 
 target_link_libraries(OpenGLEngine PRIVATE
+    ImGui
     glad
     OpenGL::GL
     glfw
