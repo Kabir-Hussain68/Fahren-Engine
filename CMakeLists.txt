@@ -6,12 +6,18 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
-find_package(spdlog REQUIRED)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(requisites/GLAD)
 add_subdirectory(requisites/imgui)
+add_subdirectory(requisites/GLFW)
+add_subdirectory(requisites/spdlog)
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+add_subdirectory(requisites/glm)
+set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
 
 add_executable(OpenGLEngine
    src/main.cpp 
@@ -44,8 +50,8 @@ target_precompile_headers(OpenGLEngine PRIVATE
 target_link_libraries(OpenGLEngine PRIVATE
     ImGui
     glad
-    OpenGL::GL
     glfw
+    OpenGL::GL
     glm::glm
     spdlog::spdlog
 )
