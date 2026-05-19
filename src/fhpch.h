@@ -5,6 +5,7 @@
 #include <utility>
 #include <functional>
 #include <algorithm>
+#include <signal.h>
 
 #include <vector>
 #include <sstream>

@@ -32,8 +32,14 @@ public:
 
 //Asserts
 #ifdef FH_ENABLE_ASSERTS
-    #define FH_ASSERT(x, ...) {if(!(x)) { FH_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); __debugbreak(); } }
-    #define FH_CORE_ASSERT(x, ...) {if(!(x)) { FH_CORE_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); __debugbreak(); } }
+    #ifdef _WIN32
+        #define FH_DEBUGBREAK() __debugbreak()
+    #else
+        #define FH_DEBUGBREAK() raise(SIGTRAP)
+    #endif
+
+    #define FH_ASSERT(x, ...) {if(!(x)) { FH_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); FH_DEBUGBREAK(); } }
+    #define FH_CORE_ASSERT(x, ...) {if(!(x)) { FH_CORE_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); FH_DEBUGBREAK(); } }
 #else
     #define FH_ASSERT(x, ...)
     #define FH_CORE_ASSERT(x, ...)
