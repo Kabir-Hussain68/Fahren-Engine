@@ -37,6 +37,8 @@ add_executable(OpenGLEngine
    src/Platform/windows/linuxWindow.cpp 
 
    src/Platform/OpenGL/imGuiOpenGLRenderer.cpp
+
+   src/Engine/imGui/imGuiLayer.cpp
 )
 
 target_include_directories(OpenGLEngine PRIVATE
