@@ -42,10 +42,8 @@ class Event
 {
     friend class EventDispatcher;
 
-protected:
-    bool m_Handled = false;     //If an event has been handled or not
-
 public:
+    bool Handled = false;     //If an event has been handled or not
     virtual EventType getEventType() const = 0;
     virtual const char* getName() const = 0;
     virtual int getCategoryFlags() const = 0;
@@ -74,7 +72,7 @@ public:
     {
         if(m_Event.getEventType() == T::getStaticType())
         {
-            m_Event.m_Handled = func(*(T*)&m_Event);
+            m_Event.Handled = func(*(T*)&m_Event);
             return true;
         }
         return false;

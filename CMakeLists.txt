@@ -21,6 +21,8 @@ add_executable(OpenGLEngine
     src/Engine/events/keyEvent.h
     src/Engine/core/window.cpp
     src/Platform/windows/linuxWindow.cpp
+    src/Engine/core/layer.cpp
+    src/Engine/core/layerStack.cpp
 )
 
 target_include_directories(OpenGLEngine PRIVATE
