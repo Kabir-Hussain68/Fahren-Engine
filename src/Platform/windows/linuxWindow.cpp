@@ -54,7 +54,7 @@ void LinuxWindow::Init(const windowProps& props)
 
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
     {
-        windowData data = *(windowData*)glfwGetWindowUserPointer(window);
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
         data.width = width;
         data.height = height;
 
@@ -64,14 +64,14 @@ void LinuxWindow::Init(const windowProps& props)
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
     {
-        windowData data = *(windowData*)glfwGetWindowUserPointer(window);
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
         WindowCloseEvent event;
         data.eventCallback(event);
     });
 
     glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        windowData data = *(windowData*)glfwGetWindowUserPointer(window);
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
  
         switch (action)
         {
@@ -96,9 +96,17 @@ void LinuxWindow::Init(const windowProps& props)
         }
     });
 
+    glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keyCode)
+    {  
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
+
+        KeyTypedEvent event(keyCode);
+        data.eventCallback(event);
+    });
+
     glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
     {
-        windowData data = *(windowData*)glfwGetWindowUserPointer(window);
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
 
         switch (action)
         {
@@ -119,7 +127,7 @@ void LinuxWindow::Init(const windowProps& props)
 
     glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
     {
-        windowData data = *(windowData*)glfwGetWindowUserPointer(window);
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
         
         MouseScrolledEvent event((float)xOffset, (float)yOffset);
         data.eventCallback(event);
@@ -127,7 +135,7 @@ void LinuxWindow::Init(const windowProps& props)
 
     glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
     {
-        windowData data = *(windowData*)glfwGetWindowUserPointer(window);
+        windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
         
         MouseMovedEvent event((float)xPos, (float)yPos);
         data.eventCallback(event);

@@ -2,6 +2,8 @@
 
 #include "fhpch.h"
 
+#include <glad/glad.h>
+
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
 Application* Application::m_Instance = nullptr;
@@ -49,6 +51,8 @@ void Application::run()
 {
     while(m_Running)
     {
+        glClear(GL_COLOR_BUFFER_BIT);
+
         for (Layer* layer : m_LayerStack)
         {
             layer->onUpdate();

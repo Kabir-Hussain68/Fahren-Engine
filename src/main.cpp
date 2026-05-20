@@ -13,7 +13,7 @@ public:
 
     void onEvent(Event& event)
     {
-        FH_CORE_INFO("{0}", event.toString());
+        FH_CORE_TRACE("{0}", event.toString());
     }
 };
 
