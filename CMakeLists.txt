@@ -38,7 +38,7 @@ add_library(FahrenEngine STATIC
     src/Engine/events/mouseEvent.h
     src/Engine/events/keyEvent.h
 
-    src/Platform/windows/linuxWindow.cpp
+    src/Platform/windows/windowWindow.cpp
     src/Platform/OpenGL/imGuiOpenGLRenderer.cpp
     src/Engine/imGui/imGuiLayer.cpp
 )
@@ -48,9 +48,7 @@ target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_SOURCE_DIR}/requisites/imgui
 )
 
-target_precompile_headers(FahrenEngine PRIVATE
-     src/fhpch.h
-)
+target_precompile_headers(FahrenEngine PRIVATE src/fhpch.h)
 
 target_link_libraries(FahrenEngine PUBLIC
     ImGui
@@ -69,14 +67,4 @@ target_compile_definitions(FahrenEngine PUBLIC
     $<$<BOOL:${APPLE}>:FH_PLATFORM_MAC>
 )
 
-add_executable(Sandbox 
-    sandbox/src/sandboxApp.cpp
-)
-
-target_include_directories(Sandbox PRIVATE 
-    ${CMAKE_SOURCE_DIR}/src
-)
-
-target_precompile_headers(Sandbox REUSE_FROM FahrenEngine)
-
-target_link_libraries(Sandbox PRIVATE FahrenEngine)
+add_subdirectory(sandbox)

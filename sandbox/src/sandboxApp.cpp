@@ -4,7 +4,7 @@ class ExampleLayer : public Layer
 {
 public:
     ExampleLayer()
-        : Layer("Exampler") {}
+        : Layer("Example Layer") {}
     
     void onUpdate() override {}
     void onEvent(Event& event) override {}

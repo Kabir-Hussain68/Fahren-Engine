@@ -36,4 +36,6 @@ public:
     inline void setEventCallback(const EventCallBackFn& callback) override { m_Data.eventCallback = callback; }
     void setVsync(bool enabled) override;
     bool isVsync() const override;
+
+    inline virtual void* getNativeWindow() const { return m_Window; };
 };
