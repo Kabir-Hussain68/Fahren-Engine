@@ -15,7 +15,7 @@ class Sandbox : public Application
 public:
     Sandbox()
     {
-        pushLayer(new ImGuiLayer());
+        pushLayer(new ExampleLayer());
     }
 
     ~Sandbox() {}

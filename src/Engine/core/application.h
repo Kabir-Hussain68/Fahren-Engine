@@ -5,6 +5,8 @@
 #include "Engine/events/events.h"
 #include "Engine/events/applicationEvent.h"
 
+#include "Engine/imGui/imGuiLayer.h"
+
 class Application
 {
 private:
@@ -12,7 +14,10 @@ private:
 
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
+    
+    ImGuiLayer* m_ImGuiLayer;
     LayerStack m_LayerStack;
+
 
     bool onWindowClose(WindowCloseEvent& e);
 public:

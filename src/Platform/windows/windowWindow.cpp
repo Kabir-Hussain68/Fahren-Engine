@@ -16,20 +16,20 @@ static  void GLFWErrorCallback(int error, const char* description)
 
 Window* Window::createWindow(const windowProps& props)
 {
-    return new LinuxWindow(props);
+    return new windowWindow(props);
 }
 
-LinuxWindow::LinuxWindow(const windowProps& props)
+windowWindow::windowWindow(const windowProps& props)
 {
     Init(props);
 }
 
-LinuxWindow::~LinuxWindow()
+windowWindow::~windowWindow()
 {
     shutdown();
 }
 
-void LinuxWindow::Init(const windowProps& props)
+void windowWindow::Init(const windowProps& props)
 {
     m_Data.title = props.title;
     m_Data.width = props.width;
@@ -142,18 +142,18 @@ void LinuxWindow::Init(const windowProps& props)
     });
 }
 
-void LinuxWindow::shutdown()
+void windowWindow::shutdown()
 {
     glfwDestroyWindow(m_Window);
 }
 
-void LinuxWindow::onUpdate()
+void windowWindow::onUpdate()
 {
     glfwPollEvents();
     glfwSwapBuffers(m_Window);
 }
 
-void LinuxWindow::setVsync(bool enabled)
+void windowWindow::setVsync(bool enabled)
 {
     if(enabled)
     {
@@ -167,7 +167,7 @@ void LinuxWindow::setVsync(bool enabled)
     m_Data.Vsync = enabled;
 }
 
-bool LinuxWindow::isVsync() const
+bool windowWindow::isVsync() const
 {
     return m_Data.Vsync;
 }

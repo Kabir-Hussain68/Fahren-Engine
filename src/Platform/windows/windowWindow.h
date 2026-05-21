@@ -4,7 +4,7 @@
 
 #include "GLFW/glfw3.h"
 
-class LinuxWindow : public Window
+class windowWindow : public Window
 {
 private:
     GLFWwindow* m_Window;
@@ -25,8 +25,8 @@ private:
     virtual void shutdown();
 
 public:
-    LinuxWindow(const windowProps& props);
-    virtual ~LinuxWindow();
+    windowWindow(const windowProps& props);
+    virtual ~windowWindow();
 
     void onUpdate() override;
 

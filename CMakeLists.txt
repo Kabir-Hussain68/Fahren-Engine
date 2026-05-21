@@ -39,7 +39,7 @@ add_library(FahrenEngine STATIC
     src/Engine/events/keyEvent.h
 
     src/Platform/windows/windowWindow.cpp
-    src/Platform/OpenGL/imGuiOpenGLRenderer.cpp
+    src/Engine/imGui/imGuiBuild.cpp
     src/Engine/imGui/imGuiLayer.cpp
 )
 
