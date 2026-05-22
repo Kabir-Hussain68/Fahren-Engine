@@ -33,6 +33,8 @@ add_library(FahrenEngine STATIC
     src/Engine/core/layerStack.cpp
     src/Engine/core/entryPoint.h
 
+    src/Engine/renderer/graphicsContext.h
+
     src/Engine/events/events.h
     src/Engine/events/applicationEvent.h
     src/Engine/events/mouseEvent.h
@@ -41,6 +43,8 @@ add_library(FahrenEngine STATIC
     src/Platform/windows/windowWindow.cpp
     src/Engine/imGui/imGuiBuild.cpp
     src/Engine/imGui/imGuiLayer.cpp
+
+    src/Platform/OpenGL/openGLContext.cpp
 )
 
 target_include_directories(FahrenEngine PUBLIC

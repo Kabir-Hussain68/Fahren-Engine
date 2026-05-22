@@ -5,7 +5,7 @@
 #include "Engine/events/applicationEvent.h"
 #include "Engine/events/mouseEvent.h"
 
-#include "glad/glad.h"
+#include "Platform/OpenGL/openGLContext.h"
 
 static bool m_GLFWInitialized = false;
 
@@ -46,9 +46,10 @@ void windowWindow::Init(const windowProps& props)
     }
 
     m_Window = glfwCreateWindow((int)props.width, (int)props.height, m_Data.title.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(m_Window);
-    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    FH_CORE_ASSERT(status, "Failed to initialize glad");
+
+    m_Context = new OpenGLContext(m_Window);
+    m_Context->Init();
+
     glfwSetWindowUserPointer(m_Window, &m_Data);
     setVsync(true);
 
@@ -150,6 +151,7 @@ void windowWindow::shutdown()
 void windowWindow::onUpdate()
 {
     glfwPollEvents();
+    m_Context->swapBuffers();
     glfwSwapBuffers(m_Window);
 }
 

@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Engine/core/window.h"
+#include "Engine/renderer/graphicsContext.h"
 
 #include "GLFW/glfw3.h"
+
 
 class windowWindow : public Window
 {
 private:
     GLFWwindow* m_Window;
+    GraphicsContext* m_Context;
 
     struct windowData
     {
