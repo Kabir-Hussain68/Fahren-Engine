@@ -152,7 +152,6 @@ void windowWindow::onUpdate()
 {
     glfwPollEvents();
     m_Context->swapBuffers();
-    glfwSwapBuffers(m_Window);
 }
 
 void windowWindow::setVsync(bool enabled)

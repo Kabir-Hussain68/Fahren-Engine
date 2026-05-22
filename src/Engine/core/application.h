@@ -7,6 +7,8 @@
 
 #include "Engine/imGui/imGuiLayer.h"
 
+#include "Engine/renderer/shader.h"
+
 class Application
 {
 private:
@@ -18,6 +20,11 @@ private:
     ImGuiLayer* m_ImGuiLayer;
     LayerStack m_LayerStack;
 
+    unsigned int m_VertexArray;
+    unsigned int m_VertexBuffer;
+    unsigned int m_IndexBuffer;
+
+    std::unique_ptr<Shader> m_Shader;
 
     bool onWindowClose(WindowCloseEvent& e);
 public:

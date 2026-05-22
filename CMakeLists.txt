@@ -34,6 +34,7 @@ add_library(FahrenEngine STATIC
     src/Engine/core/entryPoint.h
 
     src/Engine/renderer/graphicsContext.h
+    src/Engine/renderer/shader.cpp
 
     src/Engine/events/events.h
     src/Engine/events/applicationEvent.h
