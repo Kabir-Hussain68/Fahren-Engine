@@ -2,7 +2,7 @@
 
 #include "fhpch.h"
 
-#include <glad/glad.h>
+#include "Engine/renderer/renderer.h"
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
@@ -114,11 +114,15 @@ void Application::run()
 {
     while(m_Running)
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 0.1f});
+        RenderCommand::clear();
+
+        Renderer::beginScene();
 
         m_Shader->bind();
-        m_VertexArray->bind();
-        glDrawElements(GL_TRIANGLES, m_IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::submit(m_VertexArray);
+
+        Renderer::endScene();
 
         for (Layer* layer : m_LayerStack)
         {

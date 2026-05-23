@@ -8,11 +8,11 @@ VertexArray *VertexArray::create()
 {
     switch (Renderer::getAPI())
     {
-        case RendererAPI::None :
+        case RendererAPI::API::None :
             FH_CORE_ASSERT(false, "RenderAPI None currently not supported");
             return nullptr;
         
-        case RendererAPI::OpenGL :
+        case RendererAPI::API::OpenGL :
             return new OpenGLVertexArray();
     }
 
