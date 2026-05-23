@@ -8,6 +8,8 @@
 #include "Engine/imGui/imGuiLayer.h"
 
 #include "Engine/renderer/shader.h"
+#include "Engine/renderer/buffer.h"
+#include "Engine/renderer/vertexArray.h"
 
 class Application
 {
@@ -20,11 +22,10 @@ private:
     ImGuiLayer* m_ImGuiLayer;
     LayerStack m_LayerStack;
 
-    unsigned int m_VertexArray;
-    unsigned int m_VertexBuffer;
-    unsigned int m_IndexBuffer;
-
-    std::unique_ptr<Shader> m_Shader;
+    std::shared_ptr<Shader> m_Shader;
+    std::shared_ptr<VertexArray> m_VertexArray;
+    std::shared_ptr<VertexBuffer> m_VertexBuffer;
+    std::shared_ptr<IndexBuffer> m_IndexBuffer;
 
     bool onWindowClose(WindowCloseEvent& e);
 public:

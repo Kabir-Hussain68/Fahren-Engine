@@ -22,31 +22,12 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 add_subdirectory(requisites/glm)
 set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
 
-add_library(FahrenEngine STATIC
-    src/Fahren.h
-    src/fhpch.h
-
-    src/Engine/core/application.cpp
-    src/Engine/core/log.cpp
-    src/Engine/core/window.cpp
-    src/Engine/core/layer.cpp
-    src/Engine/core/layerStack.cpp
-    src/Engine/core/entryPoint.h
-
-    src/Engine/renderer/graphicsContext.h
-    src/Engine/renderer/shader.cpp
-
-    src/Engine/events/events.h
-    src/Engine/events/applicationEvent.h
-    src/Engine/events/mouseEvent.h
-    src/Engine/events/keyEvent.h
-
-    src/Platform/windows/windowWindow.cpp
-    src/Engine/imGui/imGuiBuild.cpp
-    src/Engine/imGui/imGuiLayer.cpp
-
-    src/Platform/OpenGL/openGLContext.cpp
+file(GLOB_RECURSE FAHREN_SOURCES
+    "src/*.cpp"
+    "src/*.h"
 )
+
+add_library(FahrenEngine STATIC ${FAHREN_SOURCES})
 
 target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_SOURCE_DIR}/src
