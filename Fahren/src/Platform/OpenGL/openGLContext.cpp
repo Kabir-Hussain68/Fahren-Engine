@@ -1,8 +1,8 @@
 #include "fhpch.h"
 #include "openGLContext.h"
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 OpenGLContext::OpenGLContext(GLFWwindow *windowHandle)
     : m_WindowHandle(windowHandle)

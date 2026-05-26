@@ -1,12 +1,12 @@
 [submodule "requisites/imgui"]
-	path = requisites/imgui
+	path = Fahren/requisites/imgui
 	url = https://github.com/TheCherno/imgui.git
 [submodule "requisites/GLFW"]
-	path = requisites/GLFW
+	path = Fahren/requisites/GLFW
 	url = https://github.com/glfw/glfw.git
 [submodule "requisites/glm"]
-	path = requisites/glm
+	path = Fahren/requisites/glm
 	url = https://github.com/g-truc/glm.git
 [submodule "requisites/spdlog"]
-	path = requisites/spdlog
+	path = Fahren/requisites/spdlog
 	url = https://github.com/gabime/spdlog.git
