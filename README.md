@@ -17,7 +17,7 @@ If the repository was cloned non-recursively previously, use `git submodule upda
 ```bash
 cmake -B build
 cmake --build build
-./build/sandbox/Sandbox
+./build/Sandbox/Sandbox
 ```
 
 ## Requirements
