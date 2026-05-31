@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "glm/glm.hpp"
+
 class Shader
 {
 private:
@@ -14,4 +16,5 @@ public:
     void bind() const;
     void unBind() const;
 
+    void uploadUniform(const std::string& uniform, const glm::mat4& viewProjectionMatrix);
 };

@@ -10,6 +10,7 @@
 #include "Engine/renderer/shader.h"
 #include "Engine/renderer/buffer.h"
 #include "Engine/renderer/vertexArray.h"
+#include "Engine/renderer/orthographicCamera.h"
 
 class Application
 {
@@ -26,6 +27,8 @@ private:
     std::shared_ptr<VertexArray> m_VertexArray;
     std::shared_ptr<VertexBuffer> m_VertexBuffer;
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
+
+    orthographicCamera m_Camera;
 
     bool onWindowClose(WindowCloseEvent& e);
 public:

@@ -9,6 +9,7 @@
 Application* Application::m_Instance = nullptr;
 
 Application::Application()
+    :m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 {
     FH_CORE_ASSERT(!m_Instance, "Application already exists");
     m_Instance = this;
@@ -55,11 +56,13 @@ Application::Application()
         out vec3 v_Position;
         out vec4 v_Color;
 
+        uniform mat4 u_ViewProjection;
+
         void main()
         {
             v_Position = a_Position;
             v_Color = a_Color;
-            gl_Position = vec4(a_Position, 1.0);
+            gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
         }
     )";
 
@@ -117,10 +120,9 @@ void Application::run()
         RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 0.1f});
         RenderCommand::clear();
 
-        Renderer::beginScene();
+        Renderer::beginScene(m_Camera);
 
-        m_Shader->bind();
-        Renderer::submit(m_VertexArray);
+        Renderer::submit(m_Shader, m_VertexArray);
 
         Renderer::endScene();
 

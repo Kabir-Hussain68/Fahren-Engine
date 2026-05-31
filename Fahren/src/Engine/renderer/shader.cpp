@@ -2,6 +2,7 @@
 #include "shader.h"
 
 #include <glad/glad.h>
+#include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const std::string &vertexSrc, const std::string &fragmentSrc)
 {
@@ -124,4 +125,10 @@ void Shader::bind() const
 void Shader::unBind() const
 {
     glUseProgram(0);
+}
+
+void Shader::uploadUniform(const std::string& uniform, const glm::mat4 &viewProjectionMatrix)
+{
+    GLint location = glGetUniformLocation(m_RendererID, uniform.c_str());
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(viewProjectionMatrix));
 }
