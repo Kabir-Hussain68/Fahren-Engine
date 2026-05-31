@@ -11,8 +11,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#define FH_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-
 ImGuiLayer::ImGuiLayer()
     : Layer("ImGui Layer") {}
 

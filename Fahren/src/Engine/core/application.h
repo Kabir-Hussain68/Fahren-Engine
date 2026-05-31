@@ -7,11 +7,6 @@
 
 #include "Engine/imGui/imGuiLayer.h"
 
-#include "Engine/renderer/shader.h"
-#include "Engine/renderer/buffer.h"
-#include "Engine/renderer/vertexArray.h"
-#include "Engine/renderer/orthographicCamera.h"
-
 class Application
 {
 private:
@@ -23,12 +18,7 @@ private:
     ImGuiLayer* m_ImGuiLayer;
     LayerStack m_LayerStack;
 
-    std::shared_ptr<Shader> m_Shader;
-    std::shared_ptr<VertexArray> m_VertexArray;
-    std::shared_ptr<VertexBuffer> m_VertexBuffer;
-    std::shared_ptr<IndexBuffer> m_IndexBuffer;
 
-    orthographicCamera m_Camera;
 
     bool onWindowClose(WindowCloseEvent& e);
 public:

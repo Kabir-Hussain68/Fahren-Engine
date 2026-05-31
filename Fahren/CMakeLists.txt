@@ -37,7 +37,7 @@ target_link_libraries(FahrenEngine PUBLIC
 )
 
 target_compile_definitions(FahrenEngine PUBLIC
-    GLFW_INCLUDE_ASSERTS
+    GLFW_INCLUDE_NONE
     $<$<BOOL:${FH_ENABLE_ASSERTS}>:FH_ENABLE_ASSERTS>
     $<$<BOOL:${WIN32}>:FH_PLATFORM_WINDOWS>
     $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:FH_PLATFORM_LINUX>

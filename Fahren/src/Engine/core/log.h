@@ -30,17 +30,3 @@ public:
 #define FH_ERROR(...)         Log::getClientLogger()->error(__VA_ARGS__)
 #define FH_CRITICAL(...)      Log::getClientLogger()->critical(__VA_ARGS__)
 
-//Asserts
-#ifdef FH_ENABLE_ASSERTS
-    #ifdef _WIN32
-        #define FH_DEBUGBREAK() __debugbreak()
-    #else
-        #define FH_DEBUGBREAK() raise(SIGTRAP)
-    #endif
-
-    #define FH_ASSERT(x, ...) {if(!(x)) { FH_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); FH_DEBUGBREAK(); } }
-    #define FH_CORE_ASSERT(x, ...) {if(!(x)) { FH_CORE_ERROR("ASSERTION FAILED: {0}", __VA_ARGS__); FH_DEBUGBREAK(); } }
-#else
-    #define FH_ASSERT(x, ...)
-    #define FH_CORE_ASSERT(x, ...)
-#endif

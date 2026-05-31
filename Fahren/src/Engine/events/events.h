@@ -1,9 +1,7 @@
 #pragma once
 
+#include "Engine/core/base.h"
 #include "Engine/core/log.h"
-
-
-#define BIT(x) (1 << x)
 
 //Events in this engine are currently blocking, meaning if an event occurs it is immediately
 //dispatched and handled right then and there
