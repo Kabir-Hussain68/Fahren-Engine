@@ -6,8 +6,8 @@ class OpenGLVertexArray : public VertexArray
 {
 private:
     uint32_t m_RendererID;
-    std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffer;
-    std::shared_ptr<IndexBuffer> m_IndexBuffer;
+    std::vector<Ref<VertexBuffer>> m_VertexBuffer;
+    Ref<IndexBuffer> m_IndexBuffer;
 
 public:
     OpenGLVertexArray();
@@ -16,9 +16,9 @@ public:
     virtual void bind() const override;
     virtual void unBind() const override;
 
-    virtual void addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;  
-    virtual void setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;  
+    virtual void addVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;  
+    virtual void setIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;  
 
-    virtual const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffers() const { return m_VertexBuffer; }
-    virtual const std::shared_ptr<IndexBuffer>& getIndexBuffers() const { return m_IndexBuffer; }
+    virtual const std::vector<Ref<VertexBuffer>>& getVertexBuffers() const { return m_VertexBuffer; }
+    virtual const Ref<IndexBuffer>& getIndexBuffers() const { return m_IndexBuffer; }
 };

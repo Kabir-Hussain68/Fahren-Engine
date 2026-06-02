@@ -4,6 +4,7 @@
 #include "Engine/core/layerStack.h"
 #include "Engine/events/events.h"
 #include "Engine/events/applicationEvent.h"
+#include "Engine/core/timestep.h"
 
 #include "Engine/imGui/imGuiLayer.h"
 
@@ -18,7 +19,7 @@ private:
     ImGuiLayer* m_ImGuiLayer;
     LayerStack m_LayerStack;
 
-
+    float m_LastFrameTime = 0.0f;
 
     bool onWindowClose(WindowCloseEvent& e);
 public:

@@ -2,19 +2,15 @@
 
 #include <string>
 
-#include "glm/glm.hpp"
-
 class Shader
 {
 private:
-    uint32_t m_RendererID;
 
 public:
-    Shader(const std::string& vertexSrx, const std::string& fragmentSrc);
-    ~Shader();
+    virtual ~Shader() = default;
 
-    void bind() const;
-    void unBind() const;
+    virtual void bind() const = 0;
+    virtual void unBind() const = 0;
 
-    void uploadUniform(const std::string& uniform, const glm::mat4& viewProjectionMatrix);
+    static Shader* create(const std::string& vertexSrx, const std::string& fragmentSrc);
 };

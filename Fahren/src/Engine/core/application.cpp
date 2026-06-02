@@ -4,6 +4,8 @@
 
 #include "Engine/renderer/renderer.h"
 
+#include "GLFW/glfw3.h"
+
 Application* Application::m_Instance = nullptr;
 
 Application::Application()
@@ -53,9 +55,13 @@ void Application::run()
 {
     while(m_Running)
     {
+        float time = (float)glfwGetTime();
+        Timestep timestep = time - m_LastFrameTime;
+        m_LastFrameTime = time;
+
         for (Layer* layer : m_LayerStack)
         {
-            layer->onUpdate();
+            layer->onUpdate(timestep);
         }
 
         m_ImGuiLayer->begin();
