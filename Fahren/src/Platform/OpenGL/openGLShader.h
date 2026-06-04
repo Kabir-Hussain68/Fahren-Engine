@@ -1,14 +1,23 @@
 #pragma once
 
 #include "Engine/renderer/shader.h"
+
 #include "glm/glm.hpp"
+
+//Temporary
+typedef unsigned int GLenum;
 
 class OpenGLShader : public Shader
 {
 private:
     uint32_t m_RendererID;
 
+    std::string readFile(const std::string& path);
+    std::unordered_map<GLenum, std::string> preProcess(const std::string& source);
+    void compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+
 public:
+    OpenGLShader(const std::string& path);
     OpenGLShader(const std::string& vertexSrx, const std::string& fragmentSrc);
     virtual ~OpenGLShader();
 
