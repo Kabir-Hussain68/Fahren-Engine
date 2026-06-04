@@ -11,6 +11,7 @@ class OpenGLShader : public Shader
 {
 private:
     uint32_t m_RendererID;
+    std::string m_Name;
 
     std::string readFile(const std::string& path);
     std::unordered_map<GLenum, std::string> preProcess(const std::string& source);
@@ -18,11 +19,13 @@ private:
 
 public:
     OpenGLShader(const std::string& path);
-    OpenGLShader(const std::string& vertexSrx, const std::string& fragmentSrc);
+    OpenGLShader(const std::string& name, const std::string& vertexSrx, const std::string& fragmentSrc);
     virtual ~OpenGLShader();
 
     virtual void bind() const override;
     virtual void unBind() const override;
+
+    virtual const std::string& getName() const override { return m_Name; }
 
     void uploadUniformInt(const std::string& uniform, int value);
 

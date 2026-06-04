@@ -119,7 +119,7 @@ public:
                 }
             )";
 
-            m_Shader.reset(Shader::create(vertexSrc, fragmentSrc));
+            m_Shader = Shader::create("vertexPosColor" , vertexSrc, fragmentSrc);
 
             std::string flatColorVertexShader = R"(
                 #version 330 core
@@ -152,9 +152,9 @@ public:
                 }
             )";
 
-            flatColorShader.reset(Shader::create(flatColorVertexShader, flatColorFragmentShader));
+            flatColorShader = Shader::create("FlatColor", flatColorVertexShader, flatColorFragmentShader);
 
-            m_TextureShader.reset(Shader::create("Sandbox/assets/shaders/texture.glsl"));
+            m_TextureShader = Shader::create("Sandbox/assets/shaders/texture.glsl");
 
             m_Texture = Texture2D::create("Sandbox/assets/textures/Checkerboard.png");
             m_FaceTexture = Texture2D::create("Sandbox/assets/textures/face.png");
