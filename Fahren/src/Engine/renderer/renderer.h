@@ -15,6 +15,8 @@ private:
     static sceneData* m_SceneData;
 
 public:
+    static void Init();
+
     static void beginScene(orthographicCamera& camera);
     static void endScene();
 

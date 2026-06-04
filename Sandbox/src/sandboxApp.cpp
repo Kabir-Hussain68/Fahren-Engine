@@ -17,7 +17,7 @@ private:
     Ref<Shader> flatColorShader, m_TextureShader;
 	Ref<VertexArray> m_SquareVA;
 
-    Ref<Texture2D> m_Texture;
+    Ref<Texture2D> m_Texture, m_FaceTexture;
 
     orthographicCamera m_Camera;
 
@@ -190,6 +190,7 @@ public:
             m_TextureShader.reset(Shader::create(textureVertexShader, textureFragmentShader));
 
             m_Texture = Texture2D::create("Sandbox/assets/textures/Checkerboard.png");
+            m_FaceTexture = Texture2D::create("Sandbox/assets/textures/face.png");
 
             std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->bind();
             std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->uploadUniformInt("u_Texture", 0);
@@ -249,6 +250,8 @@ public:
         }
 
         m_Texture->bind();
+        Renderer::submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        m_FaceTexture->bind();
         Renderer::submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
         //Triangle

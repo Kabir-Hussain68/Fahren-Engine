@@ -5,7 +5,12 @@
 
 Renderer::sceneData* Renderer::m_SceneData = new Renderer::sceneData;
 
-void Renderer::beginScene(orthographicCamera& camera)
+void Renderer::Init()
+{
+    RenderCommand::Init();
+}
+
+void Renderer::beginScene(orthographicCamera &camera)
 {
     m_SceneData->ViewProjectionMatrix = camera.getViewProjectionMatrix();
 }
