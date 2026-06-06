@@ -2,7 +2,7 @@
 
 #include "glm/glm.hpp"
 
-class orthographicCamera
+class OrthographicCamera
 {
 private:
     glm::vec3 m_Position = {0.0f, 0.0f, 0.0f};
@@ -14,7 +14,8 @@ private:
 
     void recalculateViewMatrix();
 public:
-    orthographicCamera(float left, float right, float bottom, float top);
+    OrthographicCamera(float left, float right, float bottom, float top);
+    void setProjection(float left, float right, float bottom, float top);
 
     const glm::vec3& getPosition() const { return m_Position;}
     void setPosition(const glm::vec3& position) { m_Position = position; recalculateViewMatrix(); }

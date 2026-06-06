@@ -10,7 +10,7 @@ void Renderer::Init()
     RenderCommand::Init();
 }
 
-void Renderer::beginScene(orthographicCamera &camera)
+void Renderer::beginScene(OrthographicCamera &camera)
 {
     m_SceneData->ViewProjectionMatrix = camera.getViewProjectionMatrix();
 }

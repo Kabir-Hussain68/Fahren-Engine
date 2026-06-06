@@ -23,6 +23,7 @@
 #include "Engine/renderer/texture.h"
 #include "Engine/renderer/vertexArray.h"
 #include "Engine/renderer/orthographicCamera.h"
+#include "Engine/renderer/orthographicCameraController.h"
 
 //Entry Point
 #include "Engine/core/entryPoint.h"

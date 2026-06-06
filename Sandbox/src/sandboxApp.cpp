@@ -19,19 +19,12 @@ private:
 
     Ref<Texture2D> m_Texture, m_FaceTexture;
 
-    orthographicCamera m_Camera;
-
-    glm::vec3 m_CameraMovePosition;
-    float m_CameraMoveSpeed = 5.0f;
-
-    float m_CameraRotation = 0.0f;
-    float m_CameraRotateSpeed = 180.0f;
-
+    OrthographicCameraController m_CameraController;
     glm::vec3 m_SquareColor = {0.2f, 0.3f, 0.8f};
 
 public:
     ExampleLayer()
-        : Layer("Example Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraMovePosition(0.0f)
+        : Layer("Example Layer"), m_CameraController(1280.0f / 720.0f)
         {
             //VAO
             m_VertexArray.reset(VertexArray::create());
@@ -165,41 +158,13 @@ public:
     
     void onUpdate(Timestep ts) override
     {
-        if(Input::isKeyPressed(FH_KEY_LEFT))
-        {
-            m_CameraMovePosition.x -= m_CameraMoveSpeed * ts;
-        }
-        if(Input::isKeyPressed(FH_KEY_RIGHT))
-        {
-            m_CameraMovePosition.x += m_CameraMoveSpeed * ts;
-        }
-        if(Input::isKeyPressed(FH_KEY_UP))
-        {
-            m_CameraMovePosition.y += m_CameraMoveSpeed * ts;
-        }
-        if(Input::isKeyPressed(FH_KEY_DOWN))
-        {
-            m_CameraMovePosition.y -= m_CameraMoveSpeed * ts;
-        }
-        
-
-        if(Input::isKeyPressed(FH_KEY_A))
-        {
-            m_CameraRotation += m_CameraRotateSpeed * ts;
-        }
-
-        if(Input::isKeyPressed(FH_KEY_D))
-        {
-            m_CameraRotation -= m_CameraRotateSpeed * ts;
-        }
-
-        m_Camera.setPosition(m_CameraMovePosition);
-        m_Camera.setRotation(m_CameraRotation);
+        //Camera
+        m_CameraController.onUpdate(ts);
 
         RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 0.1f});
         RenderCommand::clear();
 
-        Renderer::beginScene(m_Camera);
+        Renderer::beginScene(m_CameraController.getCamera());
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -236,6 +201,7 @@ public:
 
     void onEvent(Event& event) override 
     {
+        m_CameraController.onEvent(event);
     }
 };
 
