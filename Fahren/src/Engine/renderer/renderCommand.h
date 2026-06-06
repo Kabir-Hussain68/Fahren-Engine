@@ -5,7 +5,7 @@
 class RenderCommand
 {
 private:
-    static RendererAPI* s_RendererAPI;
+    static Scope<RendererAPI> s_RendererAPI;
 
 public:
     inline static void Init()

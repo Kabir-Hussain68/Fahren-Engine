@@ -82,9 +82,11 @@ std::unordered_map<GLenum, std::string> OpenGLShader::preProcess(const std::stri
 
         size_t nextLinePos = source.find_first_not_of("\r\n", eol);
         pos = source.find(typeToken, nextLinePos);
+        FH_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+        
         shaderSources[shaderTypeFromString(type)] = 
-            source.substr(nextLinePos, 
-                pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+            (pos == std::string::npos) ? source.substr(nextLinePos) : 
+            source.substr(nextLinePos, pos - nextLinePos);
     }
 
     return shaderSources;
@@ -160,6 +162,7 @@ void OpenGLShader::compile(const std::unordered_map<GLenum, std::string>& shader
     for (auto& ID : glShaderIDs)
     {
         glDetachShader(program, ID);
+        glDeleteShader(ID);
     }
 
     m_RendererID = program;

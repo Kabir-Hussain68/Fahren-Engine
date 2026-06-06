@@ -3,7 +3,7 @@
 
 #include "Platform/OpenGL/openGLShader.h"
 
-Renderer::sceneData* Renderer::m_SceneData = new Renderer::sceneData;
+Scope<Renderer::sceneData> Renderer::m_SceneData = createScope<Renderer::sceneData>();
 
 void Renderer::Init()
 {

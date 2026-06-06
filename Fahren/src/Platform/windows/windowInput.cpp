@@ -5,7 +5,7 @@
 
 #include <GLFW/glfw3.h>
 
-Input* Input::m_Instance = new WindowInput();
+Scope<Input> Input::m_Instance = createScope<WindowInput>();
 
 bool WindowInput::isKeyPressedImpl(int keycode)
 {

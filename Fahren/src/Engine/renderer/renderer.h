@@ -12,7 +12,7 @@ private:
         glm::mat4 ViewProjectionMatrix;
     };
 
-    static sceneData* m_SceneData;
+    static Scope<sceneData> m_SceneData;
 
 public:
     static void Init();

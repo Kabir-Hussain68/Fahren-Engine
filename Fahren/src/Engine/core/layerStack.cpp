@@ -9,6 +9,7 @@ LayerStack::~LayerStack()
 {
     for (Layer* layer : m_Layers)
     {
+        layer->onDetach();
         delete layer;
     }
 }
@@ -27,7 +28,7 @@ void LayerStack::pushOverlay(Layer* overlay)
 void LayerStack::popLayer(Layer* layer)
 {
     auto it = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, layer);
-    if (it != m_Layers.end())
+    if (it != m_Layers.begin() + m_LayerInsertIndex)
     {
         layer->onDetach();
         m_Layers.erase(it);

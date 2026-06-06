@@ -57,8 +57,8 @@ void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &vertexBuffer)
     for (const auto& element : layout)
     {
         //Vertex Layout
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 
+        glEnableVertexAttribArray(index + m_VertexBufferIndexOffset);
+        glVertexAttribPointer(index + m_VertexBufferIndexOffset, 
             element.getComponentCount(), 
             ShaderDataTypeToGLBaseType(element.type), 
             element.normalized ? GL_TRUE : GL_FALSE, 
@@ -68,6 +68,7 @@ void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &vertexBuffer)
     }
 
     m_VertexBuffer.push_back(vertexBuffer);
+    m_VertexBufferIndexOffset += layout.getElements().size();
 }
 
 void OpenGLVertexArray::setIndexBuffer(const Ref<IndexBuffer> &indexBuffer)

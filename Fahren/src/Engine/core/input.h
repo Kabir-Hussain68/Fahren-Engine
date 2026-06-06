@@ -3,7 +3,7 @@
 class Input
 {
 private:
-    static Input* m_Instance;
+    static Scope<Input> m_Instance;
 
 protected:
     virtual bool isKeyPressedImpl(int keycode) = 0;
