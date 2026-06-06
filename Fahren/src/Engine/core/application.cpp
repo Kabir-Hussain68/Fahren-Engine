@@ -43,6 +43,7 @@ void Application::onEvent(Event& e)
 {
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowCloseEvent>(FH_BIND_EVENT_FN(onWindowClose));
+    dispatcher.dispatch<WindowResizeEvent>(FH_BIND_EVENT_FN(onWindowResize));
 
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
     {
@@ -61,11 +62,15 @@ void Application::run()
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime = time;
 
-        for (Layer* layer : m_LayerStack)
+        if(!m_Minimized)
         {
-            layer->onUpdate(timestep);
-        }
+            for (Layer* layer : m_LayerStack)
+            {
+                layer->onUpdate(timestep);
+            }
 
+        }
+        
         m_ImGuiLayer->begin();
         for (Layer* layer : m_LayerStack)
         {
@@ -81,4 +86,18 @@ bool Application::onWindowClose(WindowCloseEvent& e)
 {
     m_Running = false;
     return true;
+}
+
+bool Application::onWindowResize(WindowResizeEvent& e)
+{
+    if (e.getWidth() == 0 || e.getHeight() == 0)
+    {
+        m_Minimized = true;
+        return false;
+    }
+    
+    m_Minimized = false;
+    Renderer::onWindowResize(e.getWidth(), e.getHeight());
+
+    return false;
 }

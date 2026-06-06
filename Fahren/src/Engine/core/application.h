@@ -15,6 +15,7 @@ private:
 
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
+    bool m_Minimized = false;
     
     ImGuiLayer* m_ImGuiLayer;
     LayerStack m_LayerStack;
@@ -22,6 +23,7 @@ private:
     float m_LastFrameTime = 0.0f;
 
     bool onWindowClose(WindowCloseEvent& e);
+    bool onWindowResize(WindowResizeEvent& e);
 public:
     Application();
     ~Application();
