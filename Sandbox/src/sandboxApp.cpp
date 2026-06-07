@@ -1,4 +1,5 @@
 #include <Fahren.h>
+#include "Engine/core/entryPoint.h"
 
 #include "Platform/OpenGL/openGLShader.h"
 
@@ -7,6 +8,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "sandbox2D.h"
 
 class ExampleLayer : public Layer
 {
@@ -27,7 +29,7 @@ public:
         : Layer("Example Layer"), m_CameraController(1280.0f / 720.0f)
         {
             //VAO
-            m_VertexArray.reset(VertexArray::create());
+            m_VertexArray = VertexArray::create();
 
             float vertices[3 * 7] =
             {
@@ -55,7 +57,7 @@ public:
             triangleIB.reset(IndexBuffer::create(indices, sizeof(indices) / sizeof(uint32_t)));
             m_VertexArray->setIndexBuffer(triangleIB);
 
-            m_SquareVA.reset(VertexArray::create());
+            m_SquareVA = VertexArray::create();
 
             float squareVertices[5 * 4] = {
                 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -210,7 +212,8 @@ class Sandbox : public Application
 public:
     Sandbox()
     {
-        pushLayer(new ExampleLayer());
+        //pushLayer(new ExampleLayer());
+        pushLayer(new Sandbox2D());
     }
 
     ~Sandbox() {}

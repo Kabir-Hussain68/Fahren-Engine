@@ -1,5 +1,6 @@
 #include "fhpch.h"
 #include "renderer.h"
+#include "renderer2D.h"
 
 #include "Platform/OpenGL/openGLShader.h"
 
@@ -8,6 +9,7 @@ Scope<Renderer::sceneData> Renderer::m_SceneData = createScope<Renderer::sceneDa
 void Renderer::Init()
 {
     RenderCommand::Init();
+    Renderer2D::Init();
 }
 
 void Renderer::onWindowResize(uint32_t width, uint32_t height)

@@ -17,6 +17,7 @@
 
 //Renderer
 #include "Engine/renderer/renderer.h"
+#include "Engine/renderer/renderer2D.h"
 #include "Engine/renderer/renderCommand.h"
 #include "Engine/renderer/buffer.h"
 #include "Engine/renderer/shader.h"
@@ -24,7 +25,3 @@
 #include "Engine/renderer/vertexArray.h"
 #include "Engine/renderer/orthographicCamera.h"
 #include "Engine/renderer/orthographicCameraController.h"
-
-//Entry Point
-#include "Engine/core/entryPoint.h"
-
