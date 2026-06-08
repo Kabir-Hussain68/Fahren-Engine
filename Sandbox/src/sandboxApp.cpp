@@ -1,9 +1,7 @@
 #include <Fahren.h>
 #include "Engine/core/entryPoint.h"
 
-#include "Platform/OpenGL/openGLShader.h"
-
-#include "imgui.h"
+#include <imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -40,7 +38,7 @@ public:
 
             //VBO
             Ref<VertexBuffer> triangleVB;
-            triangleVB.reset(VertexBuffer::create(vertices, sizeof(vertices)));
+            triangleVB = VertexBuffer::create(vertices, sizeof(vertices));
             BufferLayout layout = 
             {
                 {ShaderDataType::Float3, "a_Position"},
@@ -54,7 +52,7 @@ public:
             //EBO
             unsigned int indices[3] = {0, 1, 2};
             Ref<IndexBuffer> triangleIB;
-            triangleIB.reset(IndexBuffer::create(indices, sizeof(indices) / sizeof(uint32_t)));
+            triangleIB = IndexBuffer::create(indices, sizeof(indices) / sizeof(uint32_t));
             m_VertexArray->setIndexBuffer(triangleIB);
 
             m_SquareVA = VertexArray::create();
@@ -67,7 +65,7 @@ public:
             };
 
             Ref<VertexBuffer> squareVB;
-            squareVB.reset(VertexBuffer::create(squareVertices, sizeof(squareVertices)));
+            squareVB = VertexBuffer::create(squareVertices, sizeof(squareVertices));
             squareVB->setLayout({
                 { ShaderDataType::Float3, "a_Position" },
                 { ShaderDataType::Float2, "a_TexCoord" }
@@ -76,7 +74,7 @@ public:
 
             uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
             Ref<IndexBuffer> squareIB;
-            squareIB.reset(IndexBuffer::create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+            squareIB = IndexBuffer::create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
             m_SquareVA->setIndexBuffer(squareIB);
 
 
@@ -154,8 +152,8 @@ public:
             m_Texture = Texture2D::create("Sandbox/assets/textures/Checkerboard.png");
             m_FaceTexture = Texture2D::create("Sandbox/assets/textures/face.png");
 
-            std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->bind();
-            std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->uploadUniformInt("u_Texture", 0);
+            m_TextureShader->bind();
+            m_TextureShader->setInt("u_Texture", 0);
         }
     
     void onUpdate(Timestep ts) override
@@ -170,8 +168,8 @@ public:
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-        std::dynamic_pointer_cast<OpenGLShader>(flatColorShader)->bind();
-        std::dynamic_pointer_cast<OpenGLShader>(flatColorShader)->uploadUniformFloat3("u_Color", m_SquareColor);
+        flatColorShader->bind();
+        flatColorShader->setFloat3("u_Color", m_SquareColor);
 
         for(int y = 0; y < 20; y++)
         {

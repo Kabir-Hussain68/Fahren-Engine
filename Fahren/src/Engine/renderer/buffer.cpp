@@ -5,7 +5,7 @@
 
 #include "Platform/OpenGL/openGLBuffer.h"
 
-VertexBuffer* VertexBuffer::create(float *vertices, uint32_t size)
+Ref<VertexBuffer> VertexBuffer::create(float *vertices, uint32_t size)
 {
     switch (Renderer::getAPI())
     {
@@ -14,14 +14,14 @@ VertexBuffer* VertexBuffer::create(float *vertices, uint32_t size)
             return nullptr;
         
         case RendererAPI::API::OpenGL :
-            return new OpenGLVertexBuffer(vertices, size);
+            return createRef<OpenGLVertexBuffer>(vertices, size);
     }
 
     FH_CORE_ASSERT(false, "Unkown Render API");
     return nullptr;
 }
 
-IndexBuffer* IndexBuffer::create(uint32_t* indices, uint32_t size)
+Ref<IndexBuffer> IndexBuffer::create(uint32_t* indices, uint32_t size)
 {
     switch (Renderer::getAPI())
     {
@@ -30,7 +30,7 @@ IndexBuffer* IndexBuffer::create(uint32_t* indices, uint32_t size)
             return nullptr;
         
         case RendererAPI::API::OpenGL :
-            return new OpenGLIndexBuffer(indices, size);
+            return createRef<OpenGLIndexBuffer>(indices, size);
     }
 
     FH_CORE_ASSERT(false, "Unkown Render API");

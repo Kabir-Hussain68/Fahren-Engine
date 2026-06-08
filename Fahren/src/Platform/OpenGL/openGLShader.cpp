@@ -20,6 +20,8 @@ static GLenum shaderTypeFromString(const std::string& type)
 
 OpenGLShader::OpenGLShader(const std::string &path)
 {
+    FH_PROFILE_FUNCTION();
+
     std::string source = readFile(path);
     auto shaderSources = preProcess(source);
     compile(shaderSources);
@@ -34,6 +36,8 @@ OpenGLShader::OpenGLShader(const std::string &path)
 OpenGLShader::OpenGLShader(const std::string& name, const std::string &vertexSrc, const std::string &fragmentSrc)
     : m_Name(name)
 {
+    FH_PROFILE_FUNCTION();
+
     std::unordered_map<GLenum, std::string> sources;
     sources[GL_VERTEX_SHADER] = vertexSrc;
     sources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -42,11 +46,15 @@ OpenGLShader::OpenGLShader(const std::string& name, const std::string &vertexSrc
 
 OpenGLShader::~OpenGLShader()
 {
+    FH_PROFILE_FUNCTION();
+
     glDeleteProgram(m_RendererID);
 }
 
 std::string OpenGLShader::readFile(const std::string &path)
 {
+    FH_PROFILE_FUNCTION();
+
     std::string result;
     std::ifstream in(path, std::ios::in | std::ios::binary);
     if (in)
@@ -67,6 +75,8 @@ std::string OpenGLShader::readFile(const std::string &path)
 
 std::unordered_map<GLenum, std::string> OpenGLShader::preProcess(const std::string &source)
 {
+    FH_PROFILE_FUNCTION();
+
     std::unordered_map<GLenum, std::string> shaderSources;
 
     const char* typeToken = "#type";
@@ -94,6 +104,8 @@ std::unordered_map<GLenum, std::string> OpenGLShader::preProcess(const std::stri
 
 void OpenGLShader::compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 {
+    FH_PROFILE_FUNCTION();
+
     GLuint program = glCreateProgram();
     FH_CORE_ASSERT(shaderSources.size() <= 2, "Only 2 shaders supported right now");
     std::array<GLenum, 2> glShaderIDs;
@@ -170,31 +182,43 @@ void OpenGLShader::compile(const std::unordered_map<GLenum, std::string>& shader
 
 void OpenGLShader::bind() const
 {
+    FH_PROFILE_FUNCTION();
+
     glUseProgram(m_RendererID);
 }
 
 void OpenGLShader::unBind() const
 {
+    FH_PROFILE_FUNCTION();
+
     glUseProgram(0);
 }
 
 void OpenGLShader::setMat4(const std::string& name, const glm::mat4 &value)
 {
+    FH_PROFILE_FUNCTION();
+
     uploadUniformMat4(name, value);
 }
 
 void OpenGLShader::setInt(const std::string &name, int value)
 {
+    FH_PROFILE_FUNCTION();
+
     uploadUniformInt(name, value);
 }
 
 void OpenGLShader::setFloat3(const std::string& name, const glm::vec3 &value)
 {
+    FH_PROFILE_FUNCTION();
+
     uploadUniformFloat3(name, value);
 }
 
 void OpenGLShader::setFloat4(const std::string& name, const glm::vec4 &value)
 {
+    FH_PROFILE_FUNCTION();
+    
     uploadUniformFloat4(name, value);
 }
 

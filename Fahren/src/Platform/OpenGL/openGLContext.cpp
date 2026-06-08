@@ -12,6 +12,8 @@ OpenGLContext::OpenGLContext(GLFWwindow *windowHandle)
 
 void OpenGLContext::Init()
 {
+    FH_PROFILE_FUNCTION();
+
     glfwMakeContextCurrent(m_WindowHandle);
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     FH_CORE_ASSERT(status, "Failed to initialize glad");
@@ -24,5 +26,7 @@ void OpenGLContext::Init()
 
 void OpenGLContext::swapBuffers()
 {
+    FH_PROFILE_FUNCTION();
+
     glfwSwapBuffers(m_WindowHandle);
 }

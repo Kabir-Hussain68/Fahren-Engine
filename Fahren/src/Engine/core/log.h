@@ -1,19 +1,19 @@
 #pragma once
 
-#include "spdlog/spdlog.h"
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 
 class Log
 {
 private:
-    static std::shared_ptr<spdlog::logger> m_CoreLogger;
-    static std::shared_ptr<spdlog::logger> m_ClientLogger;
+    static Ref<spdlog::logger> m_CoreLogger;
+    static Ref<spdlog::logger> m_ClientLogger;
 
 public:
     static void Init();
 
-    inline static std::shared_ptr<spdlog::logger>& getCoreLogger()   { return m_CoreLogger; }
-    inline static std::shared_ptr<spdlog::logger>& getClientLogger() { return m_ClientLogger; }
+    inline static Ref<spdlog::logger>& getCoreLogger()   { return m_CoreLogger; }
+    inline static Ref<spdlog::logger>& getClientLogger() { return m_ClientLogger; }
 };
 
 // Core log macros

@@ -1,9 +1,9 @@
 #include "fhpch.h"
 #include "imGuiLayer.h"
 
-#include "imgui.h"
-#include "examples/imgui_impl_opengl3.h"
-#include "examples/imgui_impl_glfw.h"
+#include <imgui.h>
+#include <examples/imgui_impl_opengl3.h>
+#include <examples/imgui_impl_glfw.h>
 
 #include "Engine/core/application.h"
 
@@ -21,6 +21,8 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::onAttach()
 {
+    FH_PROFILE_FUNCTION();
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -54,6 +56,8 @@ void ImGuiLayer::onAttach()
 
 void ImGuiLayer::onDetach()
 {
+    FH_PROFILE_FUNCTION();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -61,6 +65,8 @@ void ImGuiLayer::onDetach()
 
 void ImGuiLayer::begin()
 {
+    FH_PROFILE_FUNCTION();
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -68,6 +74,8 @@ void ImGuiLayer::begin()
 
 void ImGuiLayer::end()
 {
+    FH_PROFILE_FUNCTION();
+
     ImGuiIO& io = ImGui::GetIO();
     Application& app = Application::getApplication();
     io.DisplaySize = ImVec2((float)app.getWindow().getWidth(), (float)app.getWindow().getHeight());

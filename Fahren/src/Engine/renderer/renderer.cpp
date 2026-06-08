@@ -8,8 +8,15 @@ Scope<Renderer::sceneData> Renderer::m_SceneData = createScope<Renderer::sceneDa
 
 void Renderer::Init()
 {
+    FH_PROFILE_FUNCTION();
+
     RenderCommand::Init();
     Renderer2D::Init();
+}
+
+void Renderer::shutdown()
+{
+	Renderer2D::shutdown();
 }
 
 void Renderer::onWindowResize(uint32_t width, uint32_t height)
@@ -30,8 +37,8 @@ void Renderer::endScene()
 void Renderer::submit(const Ref<Shader>& shader, const Ref<VertexArray> &vertexArray, const glm::mat4& transform)
 {
     shader->bind();
-    std::dynamic_pointer_cast<OpenGLShader>(shader)->uploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-    std::dynamic_pointer_cast<OpenGLShader>(shader)->uploadUniformMat4("u_Transform", transform);
+    shader->setMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+	shader->setMat4("u_Transform", transform);
 
     vertexArray->bind();
     RenderCommand::drawIndexed(vertexArray);

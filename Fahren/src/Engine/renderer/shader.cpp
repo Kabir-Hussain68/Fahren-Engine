@@ -13,7 +13,7 @@ Ref<Shader> Shader::create(const std::string &path)
             return nullptr;
         
         case RendererAPI::API::OpenGL :
-            return std::make_shared<OpenGLShader>(path);
+            return createRef<OpenGLShader>(path);
     }
 
     FH_CORE_ASSERT(false, "Unkown Render API");
@@ -29,7 +29,7 @@ Ref<Shader> Shader::create(const std::string& name, const std::string& vertexSrx
             return nullptr;
         
         case RendererAPI::API::OpenGL :
-            return std::make_shared<OpenGLShader>(name, vertexSrx, fragmentSrc);
+            return createRef<OpenGLShader>(name, vertexSrx, fragmentSrc);
     }
 
     FH_CORE_ASSERT(false, "Unkown Render API");

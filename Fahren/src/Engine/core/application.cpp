@@ -10,10 +10,13 @@ Application* Application::m_Instance = nullptr;
 
 Application::Application()
 {
+    FH_PROFILE_FUNCTION();
+
+
     FH_CORE_ASSERT(!m_Instance, "Application already exists");
     m_Instance = this;
 
-    m_Window = std::unique_ptr<Window>(Window::createWindow());
+    m_Window = Window::createWindow();
     m_Window->setEventCallback(FH_BIND_EVENT_FN(onEvent));
 
     Renderer::Init();
@@ -25,22 +28,31 @@ Application::Application()
 
 Application::~Application()
 {
+    FH_PROFILE_FUNCTION();
+
+    Renderer::shutdown();
 }
 
 void Application::pushLayer(Layer* layer)
 {
+    FH_PROFILE_FUNCTION();
+
     m_LayerStack.pushLayer(layer);
     layer->onAttach();
 }
 
 void Application::pushOverlay(Layer* layer)
 {
+    FH_PROFILE_FUNCTION();
+
     m_LayerStack.pushOverlay(layer);
     layer->onAttach();
 }
 
 void Application::onEvent(Event& e)
 {
+    FH_PROFILE_FUNCTION();
+
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowCloseEvent>(FH_BIND_EVENT_FN(onWindowClose));
     dispatcher.dispatch<WindowResizeEvent>(FH_BIND_EVENT_FN(onWindowResize));
@@ -56,25 +68,36 @@ void Application::onEvent(Event& e)
 
 void Application::run()
 {
+    FH_PROFILE_FUNCTION();
+
     while(m_Running)
     {
+        FH_PROFILE_SCOPE("RunLoop");
+
         float time = (float)glfwGetTime();
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime = time;
 
         if(!m_Minimized)
         {
-            for (Layer* layer : m_LayerStack)
             {
-                layer->onUpdate(timestep);
-            }
+                FH_PROFILE_SCOPE("LayerStack onUpdate");
 
+                for (Layer* layer : m_LayerStack)
+                {
+                    layer->onUpdate(timestep);
+                }
+            }
         }
         
         m_ImGuiLayer->begin();
-        for (Layer* layer : m_LayerStack)
         {
-            layer->onImGuiRender();
+            FH_PROFILE_SCOPE("LayerStack onImGuiRender");
+
+            for (Layer* layer : m_LayerStack)
+            {
+                layer->onImGuiRender();
+            }
         }
         m_ImGuiLayer->end();
 
@@ -90,6 +113,8 @@ bool Application::onWindowClose(WindowCloseEvent& e)
 
 bool Application::onWindowResize(WindowResizeEvent& e)
 {
+    FH_PROFILE_FUNCTION();
+    
     if (e.getWidth() == 0 || e.getHeight() == 0)
     {
         m_Minimized = true;

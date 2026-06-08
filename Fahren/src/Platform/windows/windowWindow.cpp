@@ -14,23 +14,29 @@ static  void GLFWErrorCallback(int error, const char* description)
     FH_CORE_ERROR("GLFW ERROR ({0}) : {1}", error, description);
 }
 
-Window* Window::createWindow(const windowProps& props)
+Scope<Window> Window::createWindow(const windowProps& props)
 {
-    return new windowWindow(props);
+    return createScope<windowWindow>(props);
 }
 
 windowWindow::windowWindow(const windowProps& props)
 {
+    FH_PROFILE_FUNCTION();
+
     Init(props);
 }
 
 windowWindow::~windowWindow()
 {
+    FH_PROFILE_FUNCTION();
+
     shutdown();
 }
 
 void windowWindow::Init(const windowProps& props)
 {
+    FH_PROFILE_FUNCTION();
+
     m_Data.title = props.title;
     m_Data.width = props.width;
     m_Data.height = props.height;
@@ -47,7 +53,7 @@ void windowWindow::Init(const windowProps& props)
 
     m_Window = glfwCreateWindow((int)props.width, (int)props.height, m_Data.title.c_str(), nullptr, nullptr);
 
-    m_Context = createScope<OpenGLContext>(m_Window);
+    m_Context = GraphicsContext::create(m_Window);
     m_Context->Init();
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -145,17 +151,23 @@ void windowWindow::Init(const windowProps& props)
 
 void windowWindow::shutdown()
 {
+    FH_PROFILE_FUNCTION();
+
     glfwDestroyWindow(m_Window);
 }
 
 void windowWindow::onUpdate()
 {
+    FH_PROFILE_FUNCTION();
+
     glfwPollEvents();
     m_Context->swapBuffers();
 }
 
 void windowWindow::setVsync(bool enabled)
 {
+    FH_PROFILE_FUNCTION();
+
     if(enabled)
     {
         glfwSwapInterval(1);

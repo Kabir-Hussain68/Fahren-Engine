@@ -19,6 +19,8 @@ static Renderer2DStorage* s_Data;
 
 void Renderer2D::Init()
 {
+    FH_PROFILE_FUNCTION();
+
     s_Data = new Renderer2DStorage();
 
     //VAO
@@ -32,7 +34,7 @@ void Renderer2D::Init()
     };
 
     Ref<VertexBuffer> squareVB;
-    squareVB.reset(VertexBuffer::create(squareVertices, sizeof(squareVertices)));
+    squareVB = VertexBuffer::create(squareVertices, sizeof(squareVertices));
     squareVB->setLayout({
         { ShaderDataType::Float3, "a_Position" },
         { ShaderDataType::Float2, "a_TexCoord" }
@@ -41,7 +43,7 @@ void Renderer2D::Init()
 
     uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
     Ref<IndexBuffer> squareIB;
-    squareIB.reset(IndexBuffer::create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+    squareIB = IndexBuffer::create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
     s_Data->quadVertexArray->setIndexBuffer(squareIB);
 
     s_Data->whiteTexture = Texture2D::create(1, 1);
@@ -55,18 +57,22 @@ void Renderer2D::Init()
 
 void Renderer2D::shutdown()
 {
+    FH_PROFILE_FUNCTION();
+
     delete s_Data;
 }
 
 void Renderer2D::beginScene(const OrthographicCamera &camera)
 {
+    FH_PROFILE_FUNCTION();
+
     s_Data->textureShader->bind();
     s_Data->textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 }
 
 void Renderer2D::endScene()
 {
-    
+    FH_PROFILE_FUNCTION();
 }
 
 void Renderer2D::drawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color)
@@ -76,6 +82,8 @@ void Renderer2D::drawQuad(const glm::vec2 &position, const glm::vec2 &size, cons
 
 void Renderer2D::drawQuad(const glm::vec3 &position, const glm::vec2 &size, const glm::vec4 &color)
 {    
+    FH_PROFILE_FUNCTION();
+
     s_Data->textureShader->setFloat4("u_Color", color);
     s_Data->whiteTexture->bind();
 
@@ -94,6 +102,8 @@ void Renderer2D::drawQuad(const glm::vec2 &position, const glm::vec2 &size, cons
 
 void Renderer2D::drawQuad(const glm::vec3 &position, const glm::vec2 &size, const Ref<Texture2D> &texture)
 {
+    FH_PROFILE_FUNCTION();
+
     s_Data->textureShader->setFloat4("u_Color", glm::vec4(1.0f));
     texture->bind();
 

@@ -3,4 +3,4 @@
 
 #include "Platform/OpenGL/openGLRendererAPI.h"
 
-Scope<RendererAPI> RenderCommand::s_RendererAPI = createScope<OpenGLRendererAPI>();
+Scope<RendererAPI> RenderCommand::s_RendererAPI = RendererAPI::create();

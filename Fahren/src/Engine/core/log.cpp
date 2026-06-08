@@ -2,8 +2,11 @@
 
 #include "fhpch.h"
 
-std::shared_ptr<spdlog::logger> Log::m_CoreLogger;
-std::shared_ptr<spdlog::logger> Log::m_ClientLogger;
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+
+Ref<spdlog::logger> Log::m_CoreLogger;
+Ref<spdlog::logger> Log::m_ClientLogger;
 
 void Log::Init()
 {

@@ -1,6 +1,6 @@
 #include "sandbox2D.h"
 
-#include "imgui.h"
+#include <imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -12,22 +12,22 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::onAttach()
 {
+    FH_PROFILE_FUNCTION();
+
     m_FaceTexture = Texture2D::create("Sandbox/assets/textures/face.png");
 }
 
 void Sandbox2D::onDetach()
 {
-
+    FH_PROFILE_FUNCTION();
 }
 
 void Sandbox2D::onUpdate(Timestep ts)
 {
     FH_PROFILE_FUNCTION();
 
-    {
-        FH_PROFILE_SCOPE("CameraController::onUpdate");
-        m_CameraController.onUpdate(ts);
-    }
+
+    m_CameraController.onUpdate(ts);
 
     {
         FH_PROFILE_SCOPE("Renderer Prep");
