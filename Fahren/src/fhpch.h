@@ -16,4 +16,6 @@
 
 #include "Engine/core/base.h"
 
+#include "Engine/debug/instrumentor.h"
+
 #include "Engine/core/log.h"

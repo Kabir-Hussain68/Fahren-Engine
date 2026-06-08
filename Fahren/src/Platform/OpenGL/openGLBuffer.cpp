@@ -1,7 +1,7 @@
 #include "fhpch.h"
 #include "openGLBuffer.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 //VBO (Vertex Buffer)
 

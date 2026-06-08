@@ -7,11 +7,18 @@ extern Application* createApplication();
 int main()
 {
     Log::Init();
-    FH_CORE_INFO("Initialized Log");
 
+    FH_PROFILE_BEGIN_SESSION("Statup", "FahrenProfile-Startup.json");
     Application* app = createApplication();
+    FH_PROFILE_END_SESSION();
+
+    FH_PROFILE_BEGIN_SESSION("Runtime", "FahrenProfile-Runtime.json");
     app->run();
+    FH_PROFILE_END_SESSION();
+
+    FH_PROFILE_BEGIN_SESSION("Shutdown", "FahrenProfile-Shutdown.json");
     delete app;
+    FH_PROFILE_END_SESSION();
 }
 
 #endif

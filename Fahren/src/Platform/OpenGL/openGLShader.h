@@ -2,7 +2,7 @@
 
 #include "Engine/renderer/shader.h"
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 //Temporary
 typedef unsigned int GLenum;
