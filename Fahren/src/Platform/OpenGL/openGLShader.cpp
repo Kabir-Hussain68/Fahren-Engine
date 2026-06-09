@@ -208,6 +208,13 @@ void OpenGLShader::setInt(const std::string &name, int value)
     uploadUniformInt(name, value);
 }
 
+void OpenGLShader::setFloat(const std::string &name, float value)
+{
+    FH_PROFILE_FUNCTION();
+
+    uploadUniformFloat(name, value);
+}
+
 void OpenGLShader::setFloat3(const std::string& name, const glm::vec3 &value)
 {
     FH_PROFILE_FUNCTION();

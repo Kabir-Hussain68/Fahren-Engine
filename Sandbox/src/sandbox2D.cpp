@@ -40,7 +40,7 @@ void Sandbox2D::onUpdate(Timestep ts)
         Renderer2D::beginScene(m_CameraController.getCamera());
         Renderer2D::drawQuad({-1.0f, 0.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
         Renderer2D::drawQuad({0.5f, -0.5f, 0.0f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
-        Renderer2D::drawQuad({0.5f, -0.5f, 0.1f}, {0.5f, 0.5f}, m_FaceTexture);
+        Renderer2D::drawRotatedQuad({0.5f, -0.5f, 0.1f}, {0.5f, 0.5f}, glm::radians(45.0f), m_FaceTexture, 2.0f, glm::vec4(0.8f, 0.8f, 0.2f, 1.0f));
         Renderer2D::endScene();
     }
 
