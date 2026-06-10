@@ -106,9 +106,12 @@ public:
     virtual void bind() const = 0;
     virtual void unBind() const = 0;
 
+    virtual void setData(const void* data, uint32_t size) = 0;
+
     virtual void setLayout(const BufferLayout& layout) = 0;
     virtual const BufferLayout& getLayout() const = 0;  
     
+    static Ref<VertexBuffer> create(uint32_t size);
     static Ref<VertexBuffer> create(float* vertices, uint32_t size);
 };
 
@@ -122,5 +125,5 @@ public:
 
     virtual uint32_t getCount() const = 0;
 
-    static Ref<IndexBuffer> create(uint32_t* indices, uint32_t size);
+    static Ref<IndexBuffer> create(uint32_t* indices, uint32_t count);
 };
