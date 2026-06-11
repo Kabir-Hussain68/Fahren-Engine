@@ -29,6 +29,8 @@ void Sandbox2D::onUpdate(Timestep ts)
 
     m_CameraController.onUpdate(ts);
 
+    Renderer2D::resetStats();
+
     {
         FH_PROFILE_SCOPE("Renderer Prep");
         RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 0.1f});
@@ -52,6 +54,14 @@ void Sandbox2D::onImGuiRender()
     FH_PROFILE_FUNCTION();
 
     ImGui::Begin("Settings");
+
+    auto stats = Renderer2D::getStats();
+    ImGui::Text("Renderer2D Stats : ");
+    ImGui::Text("Draw Calls : %d", stats.drawCalls);
+    ImGui::Text("Quads : %d", stats.quadCount);
+    ImGui::Text("Vertices : %d", stats.getTotalVertexCount());
+    ImGui::Text("Indices : %d", stats.getTotalIndexCount());
+
     ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
     ImGui::End();
 }
