@@ -1,17 +1,18 @@
 #pragma once
 
 #include "events.h"
+#include "Engine/core/input.h"
 
 class KeyEvent : public Event
 {
 protected:
-    KeyEvent(int keyCode)
+    KeyEvent(KeyCode keyCode)
         : m_KeyCode(keyCode) {}
     
-    int m_KeyCode;
+    KeyCode m_KeyCode;
 
 public:
-    inline int getKeyCode() const { return m_KeyCode; }
+    inline KeyCode getKeyCode() const { return m_KeyCode; }
 
     EVENT_CLASS_CATEGORY(eventCategoryKeyboard | eventCategoryInput);
 };
@@ -22,7 +23,7 @@ private:
     int m_RepeatCount;
 
 public:
-    KeyPressedEvent(int keyCode, int repeatCount)
+    KeyPressedEvent(KeyCode keyCode, int repeatCount)
         : KeyEvent(keyCode), m_RepeatCount(repeatCount) {}
 
     inline int getRepeatCount() const { return m_RepeatCount; }
@@ -40,7 +41,7 @@ public:
 class KeyReleasedEvent : public KeyEvent
 {
 public:
-    KeyReleasedEvent(int keyCode)
+    KeyReleasedEvent(KeyCode keyCode)
         : KeyEvent(keyCode) {}
 
 
@@ -57,7 +58,7 @@ public:
 class KeyTypedEvent : public KeyEvent
 {
 public:
-    KeyTypedEvent(int keyCode)
+    KeyTypedEvent(KeyCode keyCode)
         : KeyEvent(keyCode) {}
 
     std::string toString() const override

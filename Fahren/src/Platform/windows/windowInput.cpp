@@ -7,17 +7,17 @@
 
 Scope<Input> Input::m_Instance = createScope<WindowInput>();
 
-bool WindowInput::isKeyPressedImpl(int keycode)
+bool WindowInput::isKeyPressedImpl(KeyCode keycode)
 {
     auto window = static_cast<GLFWwindow*>(Application::getApplication().getWindow().getNativeWindow());
-    auto state = glfwGetKey(window, keycode);
+    auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
     return state == GLFW_PRESS || state == GLFW_REPEAT;
 }
 
-bool WindowInput::isMouseButtonPressedImpl(int button)
+bool WindowInput::isMouseButtonPressedImpl(MouseCode button)
 {
     auto window = static_cast<GLFWwindow*>(Application::getApplication().getWindow().getNativeWindow());
-    auto state = glfwGetKey(window, button);
+    auto state = glfwGetKey(window, static_cast<int32_t>(button));
     return state == GLFW_PRESS;
 }
 

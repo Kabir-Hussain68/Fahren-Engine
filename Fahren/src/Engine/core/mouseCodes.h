@@ -1,15 +1,39 @@
 #pragma once
 
+typedef enum class MouseCode : uint16_t
+{
+	// From glfw3.h
+	Button0                = 0,
+	Button1                = 1,
+	Button2                = 2,
+	Button3                = 3,
+	Button4                = 4,
+	Button5                = 5,
+	Button6                = 6,
+	Button7                = 7,
+
+	ButtonLast             = Button7,
+	ButtonLeft             = Button0,
+	ButtonRight            = Button1,
+	ButtonMiddle           = Button2
+} Mouse;
+	
+inline std::ostream& operator<<(std::ostream& os, MouseCode mouseCode)
+{
+	os << static_cast<int32_t>(mouseCode);
+	return os;
+}
+
 //Courtesy of glfw3.h
-#define FH_MOUSE_BUTTON_1         0
-#define FH_MOUSE_BUTTON_2         1
-#define FH_MOUSE_BUTTON_3         2
-#define FH_MOUSE_BUTTON_4         3
-#define FH_MOUSE_BUTTON_5         4
-#define FH_MOUSE_BUTTON_6         5
-#define FH_MOUSE_BUTTON_7         6
-#define FH_MOUSE_BUTTON_8         7
-#define FH_MOUSE_BUTTON_LAST      FH_MOUSE_BUTTON_8
-#define FH_MOUSE_BUTTON_LEFT      FH_MOUSE_BUTTON_1
-#define FH_MOUSE_BUTTON_RIGHT     FH_MOUSE_BUTTON_2
-#define FH_MOUSE_BUTTON_MIDDLE    FH_MOUSE_BUTTON_3
+#define FH_MOUSE_BUTTON_0      ::Mouse::Button0
+#define FH_MOUSE_BUTTON_1      ::Mouse::Button1
+#define FH_MOUSE_BUTTON_2      ::Mouse::Button2
+#define FH_MOUSE_BUTTON_3      ::Mouse::Button3
+#define FH_MOUSE_BUTTON_4      ::Mouse::Button4
+#define FH_MOUSE_BUTTON_5      ::Mouse::Button5
+#define FH_MOUSE_BUTTON_6      ::Mouse::Button6
+#define FH_MOUSE_BUTTON_7      ::Mouse::Button7
+#define FH_MOUSE_BUTTON_LAST   ::Mouse::ButtonLast
+#define FH_MOUSE_BUTTON_LEFT   ::Mouse::ButtonLeft
+#define FH_MOUSE_BUTTON_RIGHT  ::Mouse::ButtonRight
+#define FH_MOUSE_BUTTON_MIDDLE ::Mouse::ButtonMiddle

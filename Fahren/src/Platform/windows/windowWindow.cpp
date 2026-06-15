@@ -1,6 +1,7 @@
 #include "fhpch.h"
 #include "windowWindow.h"
 
+#include "Engine/core/input.h"
 #include "Engine/events/keyEvent.h"
 #include "Engine/events/applicationEvent.h"
 #include "Engine/events/mouseEvent.h"
@@ -84,19 +85,19 @@ void windowWindow::Init(const windowProps& props)
         {
             case GLFW_PRESS:
             {
-                KeyPressedEvent event(key, 0);
+                KeyPressedEvent event(static_cast<KeyCode>(key), 0);
                 data.eventCallback(event);
                 break;
             }
             case GLFW_RELEASE:
             {
-                KeyReleasedEvent event(key);
+                KeyReleasedEvent event(static_cast<KeyCode>(key));
                 data.eventCallback(event);
                 break;
             }
             case GLFW_REPEAT:
             {
-                KeyPressedEvent event(key, 1);
+                KeyPressedEvent event(static_cast<KeyCode>(key), 1);
                 data.eventCallback(event);
                 break;
             }
@@ -107,7 +108,7 @@ void windowWindow::Init(const windowProps& props)
     {  
         windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
 
-        KeyTypedEvent event(keyCode);
+        KeyTypedEvent event(static_cast<KeyCode>(keyCode));
         data.eventCallback(event);
     });
 
@@ -119,13 +120,13 @@ void windowWindow::Init(const windowProps& props)
         {
             case GLFW_PRESS:
             {
-                MouseButtonPressedEvent event(button);
+                MouseButtonPressedEvent event(static_cast<MouseCode>(button));
                 data.eventCallback(event);
                 break;
             }
             case GLFW_RELEASE:
             {
-                MouseButtonReleasedEvent event(button);
+                MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
                 data.eventCallback(event);
                 break;
             }
