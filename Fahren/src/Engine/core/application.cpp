@@ -57,11 +57,11 @@ void Application::onEvent(Event& e)
     dispatcher.dispatch<WindowCloseEvent>(FH_BIND_EVENT_FN(onWindowClose));
     dispatcher.dispatch<WindowResizeEvent>(FH_BIND_EVENT_FN(onWindowResize));
 
-    for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+    for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
     {
-        (*--it)->onEvent(e);
         if (e.Handled)
             break;
+        (*it)->onEvent(e);
 
     }
 }

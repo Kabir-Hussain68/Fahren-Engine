@@ -38,9 +38,10 @@ void LayerStack::popLayer(Layer* layer)
 
 void LayerStack::popOverlay(Layer* overlay)
 {
-    auto it = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, overlay);
+    auto it = std::find(m_Layers.begin() + m_LayerInsertIndex, m_Layers.end(), overlay);
     if (it != m_Layers.end())
     {
+        overlay->onDetach();
         m_Layers.erase(it);
     }
 }
