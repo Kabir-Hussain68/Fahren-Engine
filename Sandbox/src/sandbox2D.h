@@ -9,6 +9,7 @@ private:
 
     Ref<Shader> m_FlatColorShader;
     Ref<VertexArray> m_SquareVA;
+    Ref<FrameBuffer> m_FrameBuffer;
 
     Ref<Texture2D> m_FaceTexture;
 

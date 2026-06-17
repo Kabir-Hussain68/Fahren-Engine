@@ -49,6 +49,11 @@ void Application::pushOverlay(Layer* layer)
     layer->onAttach();
 }
 
+void Application::close()
+{
+    m_Running = false;
+}
+
 void Application::onEvent(Event& e)
 {
     FH_PROFILE_FUNCTION();

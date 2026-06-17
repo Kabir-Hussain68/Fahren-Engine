@@ -37,4 +37,6 @@ public:
 
     inline static Application& getApplication() { return *m_Instance; }
     inline Window& getWindow() { return *m_Window; }
+
+    void close();
 };

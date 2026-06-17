@@ -21,6 +21,7 @@ public:
 
     virtual uint32_t getWidhth() const override { return m_Width; }
     virtual uint32_t getHeight() const override { return m_Height; }
+    virtual uint32_t getRendererID() const override { return m_RendererID; }
 
     virtual void setData(void* data, uint32_t size) override;
 

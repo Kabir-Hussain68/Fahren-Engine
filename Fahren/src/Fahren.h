@@ -21,6 +21,7 @@
 #include "Engine/renderer/renderCommand.h"
 #include "Engine/renderer/buffer.h"
 #include "Engine/renderer/shader.h"
+#include "Engine/renderer/frameBuffer.h"
 #include "Engine/renderer/texture.h"
 #include "Engine/renderer/vertexArray.h"
 #include "Engine/renderer/orthographicCamera.h"
