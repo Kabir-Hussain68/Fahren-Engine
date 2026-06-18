@@ -41,6 +41,8 @@ class Event
     friend class EventDispatcher;
 
 public:
+    virtual ~Event() = default;
+    
     bool Handled = false;     //If an event has been handled or not
     virtual EventType getEventType() const = 0;
     virtual const char* getName() const = 0;

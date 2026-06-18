@@ -15,11 +15,6 @@ void Sandbox2D::onAttach()
     FH_PROFILE_FUNCTION();
 
     m_FaceTexture = Texture2D::create("Sandbox/assets/textures/face.png");
-
-    FrameBufferSpecification fbSpec;
-    fbSpec.width = 1280;
-    fbSpec.height = 720;
-    m_FrameBuffer = FrameBuffer::create(fbSpec);
 }
 
 void Sandbox2D::onDetach()
@@ -38,7 +33,6 @@ void Sandbox2D::onUpdate(Timestep ts)
 
     {
         FH_PROFILE_SCOPE("Renderer Prep");
-        m_FrameBuffer->bind();
         RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 0.1f});
         RenderCommand::clear();
     }
@@ -52,7 +46,6 @@ void Sandbox2D::onUpdate(Timestep ts)
         Renderer2D::drawRotatedQuad({0.5f, -0.5f, 0.1f}, {0.5f, 0.5f}, 45.0f, m_FaceTexture, 2.0f, glm::vec4(0.8f, 0.8f, 0.2f, 1.0f));
         Renderer2D::endScene();
 
-        m_FrameBuffer->unBind();
     }
 
 }
@@ -60,52 +53,6 @@ void Sandbox2D::onUpdate(Timestep ts)
 void Sandbox2D::onImGuiRender()
 {
     FH_PROFILE_FUNCTION();
-
-    static bool dockSpaceOpen = true;
-    static bool opt_fullscreen_persistant = true;
-    bool opt_fullscreen = opt_fullscreen_persistant;
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    if (opt_fullscreen)
-    {
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    }
-
-    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-        window_flags |= ImGuiWindowFlags_NoBackground;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace Demo", &dockSpaceOpen, window_flags);
-    ImGui::PopStyleVar();
-
-    if (opt_fullscreen)
-        ImGui::PopStyleVar(2);
-
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-    {
-        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-    }
-
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("Exit")) Application::getApplication().close();
-            ImGui::EndMenu();
-        }
-
-        ImGui::EndMenuBar();
-    }
 
     ImGui::Begin("Settings");
 
@@ -117,11 +64,6 @@ void Sandbox2D::onImGuiRender()
     ImGui::Text("Indices : %d", stats.getTotalIndexCount());
 
     ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
-
-    uint32_t textureID = m_FrameBuffer->getColorAttachmentRendererID();
-    ImGui::Image((ImTextureID)(uintptr_t)textureID, ImVec2(1280.0f, 720.0f));
-    ImGui::End();
-
     ImGui::End();
 }
 

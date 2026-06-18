@@ -8,7 +8,7 @@
 
 Application* Application::m_Instance = nullptr;
 
-Application::Application()
+Application::Application(const std::string& name)
 {
     FH_PROFILE_FUNCTION();
 
@@ -16,7 +16,7 @@ Application::Application()
     FH_CORE_ASSERT(!m_Instance, "Application already exists");
     m_Instance = this;
 
-    m_Window = Window::createWindow();
+    m_Window = Window::createWindow(windowProps(name));
     m_Window->setEventCallback(FH_BIND_EVENT_FN(onEvent));
 
     Renderer::Init();

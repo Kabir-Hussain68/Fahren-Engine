@@ -25,7 +25,7 @@ private:
     bool onWindowClose(WindowCloseEvent& e);
     bool onWindowResize(WindowResizeEvent& e);
 public:
-    Application();
+    Application(const std::string& name = "Fahren Engine");
     ~Application();
 
     void run();

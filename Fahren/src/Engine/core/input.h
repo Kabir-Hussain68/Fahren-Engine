@@ -10,6 +10,7 @@ private:
     static Scope<Input> m_Instance;
 
 protected:
+    Input() = default;
     virtual bool isKeyPressedImpl(KeyCode key) = 0;
     
     virtual bool isMouseButtonPressedImpl(MouseCode button) = 0;
@@ -18,6 +19,8 @@ protected:
     virtual float getMouseYImpl() = 0;
 
 public:
+    virtual ~Input() = default;
+
     inline static bool isKeyPressed(KeyCode key) { return m_Instance->isKeyPressedImpl(key); }
     
     inline static bool isMouseButtonPressed(MouseCode button) { return m_Instance->isMouseButtonPressedImpl(button); }

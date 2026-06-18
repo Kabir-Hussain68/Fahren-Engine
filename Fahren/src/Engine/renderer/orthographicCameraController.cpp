@@ -73,6 +73,13 @@ void OrthographicCameraController::onEvent(Event& event)
     dispatcher.dispatch<WindowResizeEvent>(FH_BIND_EVENT_FN(onWindowResized));
 }
 
+void OrthographicCameraController::onResize(float width, float height)
+{
+    m_AspectRatio = width / height;
+    m_Camera.setProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+   
+}
+
 bool OrthographicCameraController::onMouseScrolled(MouseScrolledEvent& event)
 {
     FH_PROFILE_FUNCTION();
@@ -87,7 +94,6 @@ bool OrthographicCameraController::onWindowResized(WindowResizeEvent& event)
 {
     FH_PROFILE_FUNCTION();
     
-    m_AspectRatio = (float)event.getWidth() / (float)event.getHeight();
-    m_Camera.setProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+    onResize((float)event.getWidth(), (float)event.getHeight());
     return false;
 }
