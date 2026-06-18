@@ -65,9 +65,12 @@ void ImGuiLayer::onDetach()
 
 void ImGuiLayer::onEvent(Event &e)
 {
-    ImGuiIO& io = ImGui::GetIO();
-	e.Handled |= e.isInCategory(eventCategoryMouse) & io.WantCaptureMouse;
-	e.Handled |= e.isInCategory(eventCategoryKeyboard) & io.WantCaptureKeyboard;
+    if (m_BlockEvents)
+    {
+        ImGuiIO& io = ImGui::GetIO();
+	    e.Handled |= e.isInCategory(eventCategoryMouse) & io.WantCaptureMouse;
+	    e.Handled |= e.isInCategory(eventCategoryKeyboard) & io.WantCaptureKeyboard;
+    }
 }
 
 void ImGuiLayer::begin()

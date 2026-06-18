@@ -39,4 +39,6 @@ public:
     inline Window& getWindow() { return *m_Window; }
 
     void close();
+
+    ImGuiLayer* getImGuiLayer() { return m_ImGuiLayer; };
 };

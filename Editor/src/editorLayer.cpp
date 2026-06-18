@@ -31,8 +31,10 @@ void EditorLayer::onUpdate(Timestep ts)
 {
     FH_PROFILE_FUNCTION();
 
-
-    m_CameraController.onUpdate(ts);
+    if (m_ViewportFocused)
+    {
+        m_CameraController.onUpdate(ts);
+    }
 
     Renderer2D::resetStats();
 
@@ -124,8 +126,13 @@ void EditorLayer::onImGuiRender()
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin("Viewport");
+
+    m_ViewportFocused = ImGui::IsWindowFocused();
+    m_ViewportHovered = ImGui::IsWindowHovered();
+    Application::getApplication().getImGuiLayer()->blockEvents(!m_ViewportFocused || !m_ViewportHovered);
+
     ImVec2 viewPortPanelSize = ImGui::GetContentRegionAvail();
-    if (m_ViewportSize != *((glm::vec2*)&viewPortPanelSize))
+    if (m_ViewportSize != *((glm::vec2*)&viewPortPanelSize) && viewPortPanelSize.x > 0 && viewPortPanelSize.y > 0)
     {
         m_FrameBuffer->resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         m_ViewportSize = {viewPortPanelSize.x, viewPortPanelSize.y};
