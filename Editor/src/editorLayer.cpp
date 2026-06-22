@@ -20,6 +20,13 @@ void EditorLayer::onAttach()
     fbSpec.width = 1280;
     fbSpec.height = 720;
     m_FrameBuffer = FrameBuffer::create(fbSpec);
+
+    m_ActiveScene = createRef<Scene>();
+
+    auto square = m_ActiveScene->createEntity("Square");
+    square.addComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+    m_SquareEntity = square;
 }
 
 void EditorLayer::onDetach()
@@ -45,13 +52,13 @@ void EditorLayer::onUpdate(Timestep ts)
         RenderCommand::clear();
     }
 
+    
     {
         FH_PROFILE_SCOPE("Renderer Draw");
         Renderer2D::beginScene(m_CameraController.getCamera());
-        Renderer2D::drawRotatedQuad({1.0f, 1.0f}, {0.8f, 0.8f}, 45.0f, {0.8f, 0.3f, 0.2f, 1.0f});
-        Renderer2D::drawQuad({-1.0f, 0.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
-        Renderer2D::drawQuad({0.5f, -0.5f, 0.0f}, {0.5f, 0.75f}, {m_SquareColor});
-        Renderer2D::drawRotatedQuad({0.5f, -0.5f, 0.1f}, {0.5f, 0.5f}, 45.0f, m_FaceTexture, 2.0f, glm::vec4(0.8f, 0.8f, 0.2f, 1.0f));
+        
+        m_ActiveScene->onUpdate(ts);
+
         Renderer2D::endScene();
 
         m_FrameBuffer->unBind();
@@ -119,7 +126,8 @@ void EditorLayer::onImGuiRender()
     ImGui::Text("Vertices : %d", stats.getTotalVertexCount());
     ImGui::Text("Indices : %d", stats.getTotalIndexCount());
 
-    ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
+    auto& squareColor = m_SquareEntity.getComponent<SpriteRendererComponent>().color;
+    ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
 
 
     ImGui::End();

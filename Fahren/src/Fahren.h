@@ -15,6 +15,11 @@
 //UI
 #include "Engine/imGui/imGuiLayer.h"
 
+//Scene
+#include "Engine/scene/scene.h"
+#include "Engine/scene/entity.h"
+#include "Engine/scene/components.h"
+
 //Renderer
 #include "Engine/renderer/renderer.h"
 #include "Engine/renderer/renderer2D.h"

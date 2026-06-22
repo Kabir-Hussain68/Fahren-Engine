@@ -13,6 +13,11 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 add_subdirectory(requisites/glm)
 set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
 
+add_library(entt INTERFACE)
+target_include_directories(entt INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/requisites/entt/include
+)
+
 file(GLOB_RECURSE FAHREN_SOURCES
     "src/*.cpp"
     "src/*.h"
@@ -37,6 +42,7 @@ target_link_libraries(FahrenEngine PUBLIC
     OpenGL::GL
     glm::glm
     spdlog::spdlog
+    entt
 )
 
 target_compile_definitions(FahrenEngine PUBLIC
