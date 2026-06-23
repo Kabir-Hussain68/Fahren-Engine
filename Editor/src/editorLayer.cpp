@@ -27,6 +27,13 @@ void EditorLayer::onAttach()
     square.addComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
     m_SquareEntity = square;
+
+    m_CameraEntity = m_ActiveScene->createEntity("Camera");
+    m_CameraEntity.addComponent<CameraComponent>();
+
+    m_SeconcCamera = m_ActiveScene->createEntity("Second Camera");
+    auto& cc = m_SeconcCamera.addComponent<CameraComponent>();
+    cc.primary = false;
 }
 
 void EditorLayer::onDetach()
@@ -37,6 +44,16 @@ void EditorLayer::onDetach()
 void EditorLayer::onUpdate(Timestep ts)
 {
     FH_PROFILE_FUNCTION();
+
+    if (FrameBufferSpecification spec = m_FrameBuffer->getSpecification();
+        m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+        (spec.width != m_ViewportSize.y || spec.height != m_ViewportSize.y))
+    {
+        m_FrameBuffer->resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_CameraController.onResize(m_ViewportSize.x, m_ViewportSize.y);
+
+        m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+    }
 
     if (m_ViewportFocused)
     {
@@ -55,11 +72,8 @@ void EditorLayer::onUpdate(Timestep ts)
     
     {
         FH_PROFILE_SCOPE("Renderer Draw");
-        Renderer2D::beginScene(m_CameraController.getCamera());
         
         m_ActiveScene->onUpdate(ts);
-
-        Renderer2D::endScene();
 
         m_FrameBuffer->unBind();
     }
@@ -128,6 +142,23 @@ void EditorLayer::onImGuiRender()
 
     auto& squareColor = m_SquareEntity.getComponent<SpriteRendererComponent>().color;
     ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
+
+    ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
+
+    if (ImGui::Checkbox("Camera Switch", &m_PrimaryCamera))
+    {
+        m_SeconcCamera.getComponent<CameraComponent>().primary = m_PrimaryCamera;
+        m_CameraEntity.getComponent<CameraComponent>().primary = !m_PrimaryCamera;
+    }
+
+    {
+        auto& camera = m_SeconcCamera.getComponent<CameraComponent>().camera;
+        float orthoSize = camera.getOrthographicSize();
+        if (ImGui::DragFloat("Second Camera ortho size", &orthoSize))
+        {
+            camera.setOrthographicSize(orthoSize);
+        }
+    }
 
 
     ImGui::End();

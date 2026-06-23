@@ -2,6 +2,8 @@
 
 #include "glm/glm.hpp"
 
+#include "sceneCamera.h"
+
 struct TagComponent
 {
     std::string tag;
@@ -34,4 +36,14 @@ struct SpriteRendererComponent
     SpriteRendererComponent(const glm::vec4 color)
         : color(color) {}
 
+};
+
+struct CameraComponent
+{
+    SceneCamera camera;
+    bool primary = true;
+    bool fixedAspectRatio = false;
+
+    CameraComponent() = default;
+    CameraComponent(const CameraComponent&) = default;
 };
