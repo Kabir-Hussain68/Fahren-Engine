@@ -63,6 +63,8 @@ void EditorLayer::onAttach()
     };
 
     m_CameraEntity.addComponent<NativeScriptComponent>().bind<Test>();
+
+    m_SceneHierarchyPanel.setContext(m_ActiveScene);
 }
 
 void EditorLayer::onDetach()
@@ -159,6 +161,8 @@ void EditorLayer::onImGuiRender()
 
         ImGui::EndMenuBar();
     }
+
+    m_SceneHierarchyPanel.onImGuiRender();
 
     ImGui::Begin("Settings");
 
