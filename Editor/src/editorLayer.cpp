@@ -34,6 +34,35 @@ void EditorLayer::onAttach()
     m_SeconcCamera = m_ActiveScene->createEntity("Second Camera");
     auto& cc = m_SeconcCamera.addComponent<CameraComponent>();
     cc.primary = false;
+
+    class Test : public ScriptableEntity
+    {
+    public:
+        void onCreate()
+        {
+        }
+
+        void onDestroy()
+        {
+
+        }
+
+        void onUpdate(Timestep ts)
+        {
+            auto& transform = getComponent<TransformComponent>().transform;
+
+            if (Input::isKeyPressed(KeyCode::A))
+                transform[3][0] -= 1.0f * ts;
+            if (Input::isKeyPressed(KeyCode::D))
+                transform[3][0] += 1.0f * ts;
+            if (Input::isKeyPressed(KeyCode::W))
+                transform[3][1] += 1.0f * ts;
+            if (Input::isKeyPressed(KeyCode::S))
+                transform[3][1] -= 1.0f * ts;
+        }
+    };
+
+    m_CameraEntity.addComponent<NativeScriptComponent>().bind<Test>();
 }
 
 void EditorLayer::onDetach()

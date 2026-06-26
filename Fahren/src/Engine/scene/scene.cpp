@@ -10,8 +10,6 @@
 
 Scene::Scene()
 {
-
-    
 }
 
 Scene::~Scene()
@@ -29,6 +27,21 @@ Entity Scene::createEntity(const std::string& name)
 
 void Scene::onUpdate(Timestep ts)
 {
+    //Update Native Scripts
+    {
+        m_Registry.view<NativeScriptComponent>().each([this, ts](auto entity, auto& nsc)
+        {
+            if (!nsc.instance)
+            {
+                nsc.instance = nsc.instantiateScript();
+                nsc.instance->m_Entity = Entity{ entity, this };
+                nsc.instance->onCreate();
+            }
+
+            nsc.instance->onUpdate(ts);
+        });
+    }
+
     Camera* mainCamera = nullptr;
     glm::mat4* cameraTransform = nullptr;
     {

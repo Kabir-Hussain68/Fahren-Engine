@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 
 #include "sceneCamera.h"
+#include "scriptableEntity.h"
 
 struct TagComponent
 {
@@ -46,4 +47,19 @@ struct CameraComponent
 
     CameraComponent() = default;
     CameraComponent(const CameraComponent&) = default;
+};
+
+struct NativeScriptComponent
+{
+    ScriptableEntity* instance = nullptr;
+
+    ScriptableEntity*(*instantiateScript)();
+    void (*destroyScript)(NativeScriptComponent*);
+
+    template<typename T>
+    void bind()
+    {
+        instantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+        destroyScript = [](NativeScriptComponent* nsc) { delete nsc->instance; nsc->instance = nullptr; };
+    }
 };
