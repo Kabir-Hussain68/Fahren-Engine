@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 EditorLayer::EditorLayer()
-    : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f),  m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
+    : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
 {
 }
 
@@ -23,15 +23,18 @@ void EditorLayer::onAttach()
 
     m_ActiveScene = createRef<Scene>();
 
-    auto square = m_ActiveScene->createEntity("Square");
-    square.addComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    auto redSquare = m_ActiveScene->createEntity("Red Square");
+    redSquare.addComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
-    m_SquareEntity = square;
+    auto greenSquare = m_ActiveScene->createEntity("Green Square");
+    greenSquare.addComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-    m_CameraEntity = m_ActiveScene->createEntity("Camera");
+    m_SquareEntity = redSquare;
+
+    m_CameraEntity = m_ActiveScene->createEntity("Camera A");
     m_CameraEntity.addComponent<CameraComponent>();
 
-    m_SeconcCamera = m_ActiveScene->createEntity("Second Camera");
+    m_SeconcCamera = m_ActiveScene->createEntity("Camera B");
     auto& cc = m_SeconcCamera.addComponent<CameraComponent>();
     cc.primary = false;
 
@@ -164,7 +167,7 @@ void EditorLayer::onImGuiRender()
 
     m_SceneHierarchyPanel.onImGuiRender();
 
-    ImGui::Begin("Settings");
+    ImGui::Begin("Stats");
 
     auto stats = Renderer2D::getStats();
     ImGui::Text("Renderer2D Stats : ");
@@ -172,27 +175,6 @@ void EditorLayer::onImGuiRender()
     ImGui::Text("Quads : %d", stats.quadCount);
     ImGui::Text("Vertices : %d", stats.getTotalVertexCount());
     ImGui::Text("Indices : %d", stats.getTotalIndexCount());
-
-    auto& squareColor = m_SquareEntity.getComponent<SpriteRendererComponent>().color;
-    ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
-
-    ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
-
-    if (ImGui::Checkbox("Camera Switch", &m_PrimaryCamera))
-    {
-        m_SeconcCamera.getComponent<CameraComponent>().primary = m_PrimaryCamera;
-        m_CameraEntity.getComponent<CameraComponent>().primary = !m_PrimaryCamera;
-    }
-
-    {
-        auto& camera = m_SeconcCamera.getComponent<CameraComponent>().camera;
-        float orthoSize = camera.getOrthographicSize();
-        if (ImGui::DragFloat("Second Camera ortho size", &orthoSize))
-        {
-            camera.setOrthographicSize(orthoSize);
-        }
-    }
-
 
     ImGui::End();
 

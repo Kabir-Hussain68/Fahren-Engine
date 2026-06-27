@@ -84,4 +84,95 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
             ImGui::TreePop();
         }
     }
+
+    if (entity.hasComponent<CameraComponent>())
+    {
+        if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
+        {
+            auto& cameraComponent = entity.getComponent<CameraComponent>();
+            auto& camera = cameraComponent.camera;
+
+            ImGui::Checkbox("Primary", &cameraComponent.primary);
+
+            const char* projectionTypeStrings[] = {"Prespective", "Orthographic"};
+            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.getProjectionType()];
+
+            if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
+                    if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
+                    {
+                        currentProjectionTypeString = projectionTypeStrings[i];
+                        camera.setProjectionType((SceneCamera::ProjectionType)i);
+                    }
+
+                    if (isSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+
+                ImGui::EndCombo();
+            }
+
+            if (camera.getProjectionType() ==  SceneCamera::ProjectionType::Prespective)
+            {
+                float prespectiveFov = glm::degrees(camera.getPrespectiveVerticalFOV());
+                if (ImGui::DragFloat("FOV", &prespectiveFov))
+                {
+                    camera.setPrespectiveVerticalFOV(glm::radians(prespectiveFov));
+                }
+                
+                float prespectiveNear = camera.getPrespectiveNearClip();
+                if (ImGui::DragFloat("NearClip", &prespectiveNear))
+                {
+                    camera.setPrespectiveNearClip(prespectiveNear);
+                }
+
+                float prespectiveFar = camera.getPrespectiveFarClip();
+                if (ImGui::DragFloat("FarClip", &prespectiveFar))
+                {
+                    camera.setPrespectiveFarClip(prespectiveFar);
+                }
+            }
+
+            if (camera.getProjectionType() ==  SceneCamera::ProjectionType::Orthographic)
+            {
+                float orthoSize = camera.getOrthographicSize();
+                if (ImGui::DragFloat("Size", &orthoSize))
+                {
+                    camera.setOrthographicSize(orthoSize);
+                }
+                
+                float orthoNear = camera.getOrthographicNearClip();
+                if (ImGui::DragFloat("NearClip", &orthoNear))
+                {
+                    camera.setOrthographicNearClip(orthoNear);
+                }
+
+                float orthoFar = camera.getOrthographicFarClip();
+                if (ImGui::DragFloat("FarClip", &orthoFar))
+                {
+                    camera.setOrthographicFarClip(orthoFar);
+                }
+
+                ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.fixedAspectRatio);
+            }
+
+            ImGui::TreePop();
+        }
+    }
+
+    if (entity.hasComponent<SpriteRendererComponent>())
+    {
+        if (ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer"))
+        {
+            auto& src = entity.getComponent<SpriteRendererComponent>();
+            ImGui::ColorEdit4("Color", glm::value_ptr(src.color));
+
+            ImGui::TreePop();
+        }
+    }
 }
