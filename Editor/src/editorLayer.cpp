@@ -52,16 +52,16 @@ void EditorLayer::onAttach()
 
         void onUpdate(Timestep ts)
         {
-            auto& transform = getComponent<TransformComponent>().transform;
+            auto& translation = getComponent<TransformComponent>().translation;
 
             if (Input::isKeyPressed(KeyCode::A))
-                transform[3][0] -= 1.0f * ts;
+                translation.x -= 1.0f * ts;
             if (Input::isKeyPressed(KeyCode::D))
-                transform[3][0] += 1.0f * ts;
+                translation.x += 1.0f * ts;
             if (Input::isKeyPressed(KeyCode::W))
-                transform[3][1] += 1.0f * ts;
+                translation.y += 1.0f * ts;
             if (Input::isKeyPressed(KeyCode::S))
-                transform[3][1] -= 1.0f * ts;
+                translation.y -= 1.0f * ts;
         }
     };
 
