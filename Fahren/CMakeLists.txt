@@ -5,9 +5,17 @@ set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(requisites/GLAD)
-add_subdirectory(requisites/imgui)
 add_subdirectory(requisites/GLFW)
 add_subdirectory(requisites/spdlog)
+
+add_library(ImGui STATIC
+    requisites/imgui/imgui.cpp
+    requisites/imgui/imgui_draw.cpp
+    requisites/imgui/imgui_widgets.cpp
+    requisites/imgui/imgui_tables.cpp
+    requisites/imgui/imgui_demo.cpp
+)
+target_include_directories(ImGui PUBLIC requisites/imgui)
 
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 add_subdirectory(requisites/glm)
