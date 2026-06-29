@@ -14,6 +14,7 @@ SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &context)
 void SceneHierarchyPanel::setContext(const Ref<Scene> &context)
 {
     m_Context = context;
+    m_SelectionContext = {};
 }
 
 void SceneHierarchyPanel::onImGuiRender()

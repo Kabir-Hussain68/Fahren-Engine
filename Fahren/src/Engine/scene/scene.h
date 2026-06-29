@@ -10,6 +10,7 @@ class Scene
 {
 private:
     friend class Entity;
+    friend class SceneSerializer;
     friend class SceneHierarchyPanel;
 
     entt::registry m_Registry;

@@ -21,6 +21,12 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 add_subdirectory(requisites/glm)
 set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
 
+set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+add_subdirectory(requisites/yaml-cpp)
+
 add_library(entt INTERFACE)
 target_include_directories(entt INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/entt/include
@@ -33,7 +39,23 @@ file(GLOB_RECURSE FAHREN_SOURCES
     "requisites/stb_image/*.h"
 )
 
+list(REMOVE_ITEM FAHREN_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Platform/windows/windowsPlatformUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Platform/linux/linuxPlatformUtils.cpp
+)
+
 add_library(FahrenEngine STATIC ${FAHREN_SOURCES})
+
+if(WIN32)
+    target_sources(FahrenEngine PRIVATE
+        src/Platform/windows/windowsPlatformUtils.cpp
+    )
+elseif(UNIX)
+    target_sources(FahrenEngine PRIVATE
+        src/Platform/linux/linuxPlatformUtils.cpp
+    )
+endif()
+
 
 target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -51,6 +73,7 @@ target_link_libraries(FahrenEngine PUBLIC
     glm::glm
     spdlog::spdlog
     entt
+    yaml-cpp::yaml-cpp
 )
 
 target_compile_definitions(FahrenEngine PUBLIC

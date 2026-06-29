@@ -5,6 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Engine/scene/sceneSerializer.h"
+
+#include "Engine/utils/platformUtils.h"
+
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
 {
@@ -22,6 +26,8 @@ void EditorLayer::onAttach()
     m_FrameBuffer = FrameBuffer::create(fbSpec);
 
     m_ActiveScene = createRef<Scene>();
+
+#if 0
 
     auto redSquare = m_ActiveScene->createEntity("Red Square");
     redSquare.addComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -66,6 +72,7 @@ void EditorLayer::onAttach()
     };
 
     m_CameraEntity.addComponent<NativeScriptComponent>().bind<Test>();
+#endif
 
     m_SceneHierarchyPanel.setContext(m_ActiveScene);
 }
@@ -163,7 +170,26 @@ void EditorLayer::onImGuiRender()
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Exit")) Application::getApplication().close();
+            if (ImGui::MenuItem("New", "Ctrl+N"))
+            {
+                newScene();
+            }
+
+            if (ImGui::MenuItem("Open...", "Ctrl+O"))
+            {
+               openScene();
+            }
+
+            if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+            {
+               saveSceneAs();
+            }
+
+            if (ImGui::MenuItem("Exit"))
+            {
+                Application::getApplication().close();
+            } 
+
             ImGui::EndMenu();
         }
 
@@ -204,4 +230,74 @@ void EditorLayer::onImGuiRender()
 void EditorLayer::onEvent(Event &event)
 {
     m_CameraController.onEvent(event);
+
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<KeyPressedEvent>(FH_BIND_EVENT_FN(EditorLayer::onKeyPressed));
+
 }
+
+bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
+{
+    if(event.getRepeatCount() > 0)
+        return false;
+
+    bool controlPressed = Input::isKeyPressed(Key::LeftControl) || Input::isKeyPressed(Key::RightControl);
+    bool shiftPressed = Input::isKeyPressed(Key::LeftShift) || Input::isKeyPressed(Key::RightShift);
+    switch (event.getKeyCode())
+    {
+        case Key::N:
+        {   
+            if (controlPressed)
+                newScene();
+            break;
+        }
+
+        case Key::O:
+        {   
+            if (controlPressed)
+                openScene();
+            break;
+        }
+
+        case Key::S:
+        {   
+            if (controlPressed && shiftPressed)
+                saveSceneAs();
+            break;
+        }
+    }
+
+    return false;
+}
+
+void EditorLayer::newScene()
+{
+    m_ActiveScene = createRef<Scene>();
+    m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+    m_SceneHierarchyPanel.setContext(m_ActiveScene);
+}
+
+void EditorLayer::openScene()
+{
+    std::string filePath = FileDialogs::openFile("Fahren Scene (*.fahren)\0*,fahren\0");
+    if (!filePath.empty())
+    {
+        m_ActiveScene = createRef<Scene>();
+        m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.setContext(m_ActiveScene);
+
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.deserialize(filePath);
+    }
+}
+
+void EditorLayer::saveSceneAs()
+{
+    std::string filePath = FileDialogs::saveFile("Fahren Scene (*.fahren)\0*,fahren\0");
+    if (!filePath.empty())
+    {
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.serialize(filePath);
+    }
+}
+

@@ -11,3 +11,6 @@
 [submodule "requisites/spdlog"]
 	path = Fahren/requisites/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "Fahren/requisites/yaml-cpp"]
+	path = Fahren/requisites/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

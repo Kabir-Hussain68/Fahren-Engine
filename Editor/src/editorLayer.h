@@ -30,6 +30,12 @@ private:
     //Panels
     SceneHierarchyPanel m_SceneHierarchyPanel;
 
+    bool onKeyPressed(KeyPressedEvent& event);
+
+    void newScene();
+    void saveSceneAs();
+    void openScene();
+
 public:
     EditorLayer();
     virtual ~EditorLayer() = default;
