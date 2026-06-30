@@ -1,6 +1,7 @@
 #include "editorLayer.h"
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -8,6 +9,7 @@
 #include "Engine/scene/sceneSerializer.h"
 
 #include "Engine/utils/platformUtils.h"
+#include "Engine/math/math.h"
 
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
@@ -214,13 +216,58 @@ void EditorLayer::onImGuiRender()
 
     m_ViewportFocused = ImGui::IsWindowFocused();
     m_ViewportHovered = ImGui::IsWindowHovered();
-    Application::getApplication().getImGuiLayer()->blockEvents(!m_ViewportFocused || !m_ViewportHovered);
+    Application::getApplication().getImGuiLayer()->blockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
     ImVec2 viewPortPanelSize = ImGui::GetContentRegionAvail();
     m_ViewportSize = { viewPortPanelSize.x, viewPortPanelSize.y };
 
     uint32_t textureID = m_FrameBuffer->getColorAttachmentRendererID();
     ImGui::Image((ImTextureID)(uintptr_t)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+    //Gizmos
+    Entity selectedEntity = m_SceneHierarchyPanel.getSelectedEntity();
+    if (selectedEntity && m_GizmoType != -1)
+    {
+        ImGuizmo::SetOrthographic(false);   
+        ImGuizmo::SetDrawlist();
+        float windowWidth = (float)ImGui::GetWindowWidth();
+        float windowHeight = (float)ImGui::GetWindowHeight();
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+        //Camera
+        auto cameraEntity = m_ActiveScene->getPrimaryCameraEntity();
+        const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
+        const glm::mat4& cameraProjection = camera.getProjection();
+        glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+
+        //Entity Transform
+        auto& tc = selectedEntity.getComponent<TransformComponent>();
+        glm::mat4 transform = tc.getTransform();
+
+        //Snapping
+        bool snap = Input::isKeyPressed(Key::LeftControl);
+        float snapValue = 0.5f;
+        if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+            snapValue = 45.0f;
+        
+        float snapValues[3] = {snapValue, snapValue, snapValue};
+
+        ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+                  (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+                   nullptr, snap ? snapValues : nullptr);
+
+        if (ImGuizmo::IsUsing())
+        {
+            glm::vec3 translation, rotation, scale;
+            Math::decomposeTransform(transform, translation, rotation, scale);
+
+            glm::vec3 deltaRotation = rotation - tc.rotation;
+            tc.translation = translation;
+            tc.rotation += deltaRotation;
+            tc.scale = scale;
+        }
+    }
+
     ImGui::End();
     ImGui::PopStyleVar();
 
@@ -245,6 +292,7 @@ bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
     bool shiftPressed = Input::isKeyPressed(Key::LeftShift) || Input::isKeyPressed(Key::RightShift);
     switch (event.getKeyCode())
     {
+        //File Dialogs
         case Key::N:
         {   
             if (controlPressed)
@@ -263,6 +311,28 @@ bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
         {   
             if (controlPressed && shiftPressed)
                 saveSceneAs();
+            break;
+        }
+
+        //Gizmos
+        case Key::Q:
+        {
+            m_GizmoType = -1;
+            break;
+        }
+        case Key::W:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            break;
+        }
+        case Key::E:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            break;
+        }
+        case Key::R:
+        {
+            m_GizmoType = ImGuizmo::OPERATION::SCALE;
             break;
         }
     }

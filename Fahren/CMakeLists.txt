@@ -17,6 +17,13 @@ add_library(ImGui STATIC
 )
 target_include_directories(ImGui PUBLIC requisites/imgui)
 
+add_library(ImGuizmo STATIC
+    requisites/imguizmo/ImGuizmo.cpp
+)
+target_include_directories(ImGuizmo PUBLIC requisites/imguizmo)
+target_compile_definitions(ImGuizmo PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
+target_link_libraries(ImGuizmo PUBLIC ImGui)
+
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 add_subdirectory(requisites/glm)
 set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
@@ -67,6 +74,7 @@ target_precompile_headers(FahrenEngine PRIVATE src/fhpch.h)
 
 target_link_libraries(FahrenEngine PUBLIC
     ImGui
+    ImGuizmo
     glad
     glfw
     OpenGL::GL

@@ -20,4 +20,6 @@ public:
     void setContext(const Ref<Scene>& context);
 
     void onImGuiRender();
+
+    Entity getSelectedEntity()const { return m_SelectionContext; }
 };
