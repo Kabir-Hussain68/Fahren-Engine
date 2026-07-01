@@ -23,6 +23,7 @@ void EditorLayer::onAttach()
     m_FaceTexture = Texture2D::create("assets/textures/face.png");
 
     FrameBufferSpecification fbSpec;
+    fbSpec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
     fbSpec.width = 1280;
     fbSpec.height = 720;
     m_FrameBuffer = FrameBuffer::create(fbSpec);
