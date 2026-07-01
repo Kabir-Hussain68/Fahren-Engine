@@ -29,6 +29,8 @@ void EditorLayer::onAttach()
 
     m_ActiveScene = createRef<Scene>();
 
+    m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
 #if 0
 
     auto redSquare = m_ActiveScene->createEntity("Red Square");
@@ -94,6 +96,7 @@ void EditorLayer::onUpdate(Timestep ts)
     {
         m_FrameBuffer->resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         m_CameraController.onResize(m_ViewportSize.x, m_ViewportSize.y);
+        m_EditorCamera.setViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 
         m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
     }
@@ -101,7 +104,9 @@ void EditorLayer::onUpdate(Timestep ts)
     if (m_ViewportFocused)
     {
         m_CameraController.onUpdate(ts);
+        m_EditorCamera.onUpdate(ts);
     }
+
 
     Renderer2D::resetStats();
 
@@ -116,7 +121,7 @@ void EditorLayer::onUpdate(Timestep ts)
     {
         FH_PROFILE_SCOPE("Renderer Draw");
         
-        m_ActiveScene->onUpdate(ts);
+        m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
 
         m_FrameBuffer->unBind();
     }
@@ -235,10 +240,16 @@ void EditorLayer::onImGuiRender()
         ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
         //Camera
-        auto cameraEntity = m_ActiveScene->getPrimaryCameraEntity();
-        const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
-        const glm::mat4& cameraProjection = camera.getProjection();
-        glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+
+        //Runtime Camer
+        // auto cameraEntity = m_ActiveScene->getPrimaryCameraEntity();
+        // const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
+        // const glm::mat4& cameraProjection = camera.getProjection();
+        // glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+
+        //Editor Camera
+        const glm::mat4& cameraProjection = m_EditorCamera.getProjection();
+        glm::mat4 cameraView = m_EditorCamera.getViewMatrix();
 
         //Entity Transform
         auto& tc = selectedEntity.getComponent<TransformComponent>();
@@ -277,6 +288,7 @@ void EditorLayer::onImGuiRender()
 void EditorLayer::onEvent(Event &event)
 {
     m_CameraController.onEvent(event);
+    m_EditorCamera.onEvent(event);
 
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<KeyPressedEvent>(FH_BIND_EVENT_FN(EditorLayer::onKeyPressed));

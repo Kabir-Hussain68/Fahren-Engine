@@ -2,9 +2,9 @@
 #include "Engine/utils/platformUtils.h"
 
 #include <commdlg.h>
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
-#include <glfw/glfw3native.h>
+#include <GLFW/glfw3native.h>
 
 #include "Engine/core/application.h"
 
@@ -15,7 +15,7 @@ std::string FileDialogs::openFile(const char* filter)
 	CHAR currentDir[256] = { 0 };
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow());
+	ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::getApplication().getWindow().getNativeWindow());
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	if (GetCurrentDirectoryA(256, currentDir))

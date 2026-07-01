@@ -1,8 +1,9 @@
 #pragma once
 
-#include "orthographicCamera.h"
 #include "camera.h"
 #include "texture.h"
+#include "orthographicCamera.h"
+#include "editorCamera.h"
 
 class Renderer2D
 {
@@ -14,6 +15,7 @@ public:
     static void shutdown();
 
     static void beginScene(const Camera& camera, const glm::mat4& transform);
+    static void beginScene(const EditorCamera& camera);
     static void beginScene(const OrthographicCamera& camera);
     static void endScene();
     static void flush();

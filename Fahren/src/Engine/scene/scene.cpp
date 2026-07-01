@@ -30,7 +30,22 @@ void Scene::destroyEntity(Entity entity)
     m_Registry.destroy(entity);
 }
 
-void Scene::onUpdate(Timestep ts)
+void Scene::onUpdateEditor(Timestep ts, EditorCamera &camera)
+{
+    Renderer2D::beginScene(camera);
+
+        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (auto entity : group)
+        {
+            auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+    
+            Renderer2D::drawQuad(transform.getTransform(), sprite.color);
+        }
+
+    Renderer2D::endScene();
+}
+
+void Scene::onUpdateRuntime(Timestep ts)
 {
     //Update Native Scripts
     {

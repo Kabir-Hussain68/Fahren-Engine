@@ -4,6 +4,8 @@
 
 #include "Engine/core/timestep.h"
 
+#include "Engine/renderer/editorCamera.h"
+
 class Entity;
 
 class Scene
@@ -28,7 +30,8 @@ public:
     Entity createEntity(const std::string& name = std::string());
     void destroyEntity(Entity entity);
 
-    void onUpdate(Timestep ts);
+    void onUpdateEditor(Timestep ts, EditorCamera& camera);
+    void onUpdateRuntime(Timestep ts);
     void onViewportResize(uint32_t width, uint32_t height);
 
     Entity getPrimaryCameraEntity();
