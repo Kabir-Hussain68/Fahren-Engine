@@ -7,14 +7,17 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <sstream>
+
+#include "Engine/core/log.h"
 
 using FloatingPointMicroseconds = std::chrono::duration<double, std::micro>;
 
 struct ProfileResult
 {
     std::string Name;
-	FloatingPointMicroseconds Start;
-	std::chrono::microseconds ElapsedTime;
+    FloatingPointMicroseconds Start;
+    std::chrono::microseconds ElapsedTime;
     std::thread::id ThreadID;
 };
 
@@ -25,15 +28,9 @@ struct InstrumentationSession
 
 class Instrumentor
 {
-private:
-    std::mutex m_Mutex;
-    InstrumentationSession* m_CurrentSession;
-    std::ofstream m_OutputStream;
 public:
-    Instrumentor()
-        : m_CurrentSession(nullptr)
-    {
-    }
+    Instrumentor(const Instrumentor&) = delete;
+    Instrumentor(Instrumentor&&) = delete;
 
     void BeginSession(const std::string& name, const std::string& filepath = "results.json")
     {
@@ -67,14 +64,11 @@ public:
     {
         std::stringstream json;
 
-        std::string name = result.Name;
-        std::replace(name.begin(), name.end(), '"', '\'');
-
         json << std::setprecision(3) << std::fixed;
         json << ",{";
         json << "\"cat\":\"function\",";
         json << "\"dur\":" << (result.ElapsedTime.count()) << ',';
-        json << "\"name\":\"" << name << "\",";
+        json << "\"name\":\"" << result.Name << "\",";
         json << "\"ph\":\"X\",";
         json << "\"pid\":0,";
         json << "\"tid\":" << result.ThreadID << ",";
@@ -96,6 +90,16 @@ public:
     }
 
 private:
+    Instrumentor()
+        : m_CurrentSession(nullptr)
+    {
+    }
+
+    ~Instrumentor()
+    {
+        EndSession();
+    }
+
     void WriteHeader()
     {
         m_OutputStream << "{\"otherData\": {},\"traceEvents\":[{}";
@@ -118,6 +122,11 @@ private:
             m_CurrentSession = nullptr;
         }
     }
+
+private:
+    std::mutex m_Mutex;
+    InstrumentationSession* m_CurrentSession;
+    std::ofstream m_OutputStream;
 };
 
 class InstrumentationTimer
@@ -138,19 +147,49 @@ public:
     void Stop()
     {
         auto endTimepoint = std::chrono::steady_clock::now();
-			auto highResStart = FloatingPointMicroseconds{ m_StartTimepoint.time_since_epoch() };
-			auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch() - 
-                               std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch();
+        auto highResStart = FloatingPointMicroseconds{ m_StartTimepoint.time_since_epoch() };
+        auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch() -
+                           std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch();
 
         Instrumentor::Get().WriteProfile({ m_Name, highResStart, elapsedTime, std::this_thread::get_id() });
 
         m_Stopped = true;
     }
+
 private:
     const char* m_Name;
     std::chrono::time_point<std::chrono::steady_clock> m_StartTimepoint;
     bool m_Stopped;
 };
+
+namespace InstrumentorUtils {
+
+    template <size_t N>
+    struct ChangeResult
+    {
+        char Data[N];
+    };
+
+    template <size_t N, size_t K>
+    constexpr auto CleanupOutputString(const char(&expr)[N], const char(&remove)[K])
+    {
+        ChangeResult<N> result = {};
+
+        size_t srcIndex = 0;
+        size_t dstIndex = 0;
+        while (srcIndex < N)
+        {
+            size_t matchIndex = 0;
+            while (matchIndex < K - 1 && srcIndex + matchIndex < N - 1 && expr[srcIndex + matchIndex] == remove[matchIndex])
+                matchIndex++;
+            if (matchIndex == K - 1)
+                srcIndex += matchIndex;
+            result.Data[dstIndex++] = expr[srcIndex] == '"' ? '\'' : expr[srcIndex];
+            srcIndex++;
+        }
+        return result;
+    }
+}
 
 #define FH_PROFILE 1
 #if FH_PROFILE
@@ -164,10 +203,13 @@ private:
         #define FH_FUNC_SIG "FH_FUNC_SIG unknown!"
     #endif
 
-    #define FH_PROFILE_BEGIN_SESSION(name, path) ::Instrumentor::Get().BeginSession(name, path);
-    #define FH_PROFILE_END_SESSION() ::Instrumentor::Get().EndSession();
-    #define FH_PROFILE_SCOPE(name) ::InstrumentationTimer timer##__LINE__(name);
-    #define FH_PROFILE_FUNCTION() FH_PROFILE_SCOPE(FH_FUNC_SIG)
+    #define FH_PROFILE_BEGIN_SESSION(name, path) ::Instrumentor::Get().BeginSession(name, path)
+    #define FH_PROFILE_END_SESSION()              ::Instrumentor::Get().EndSession()
+    #define FH_PROFILE_SCOPE_LINE2(name, line)    constexpr auto fixedName##line = ::InstrumentorUtils::CleanupOutputString(name, "__cdecl ");\
+                                                  ::InstrumentationTimer timer##line(fixedName##line.Data)
+    #define FH_PROFILE_SCOPE_LINE(name, line)     FH_PROFILE_SCOPE_LINE2(name, line)
+    #define FH_PROFILE_SCOPE(name)                FH_PROFILE_SCOPE_LINE(name, __LINE__)
+    #define FH_PROFILE_FUNCTION()                 FH_PROFILE_SCOPE(FH_FUNC_SIG)
 #else
     #define FH_PROFILE_BEGIN_SESSION(name, path)
     #define FH_PROFILE_END_SESSION()

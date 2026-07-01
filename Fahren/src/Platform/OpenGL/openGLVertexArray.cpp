@@ -27,32 +27,28 @@ static GLenum ShaderDataTypeToGLBaseType(ShaderDataType type)
 OpenGLVertexArray::OpenGLVertexArray()
 {
     FH_PROFILE_FUNCTION();
-
     glCreateVertexArrays(1, &m_RendererID);
 }
 
 OpenGLVertexArray::~OpenGLVertexArray()
 {
     FH_PROFILE_FUNCTION();
-
     glDeleteVertexArrays(1, &m_RendererID);
 }
 
 void OpenGLVertexArray::bind() const
 {
     FH_PROFILE_FUNCTION();
-
     glBindVertexArray(m_RendererID);
 }
 
 void OpenGLVertexArray::unBind() const
 {
     FH_PROFILE_FUNCTION();
-
     glBindVertexArray(0);
 }
 
-void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &vertexBuffer)
+void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 {
     FH_PROFILE_FUNCTION();
 
@@ -61,30 +57,61 @@ void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer> &vertexBuffer)
     glBindVertexArray(m_RendererID);
     vertexBuffer->bind();
 
-
-    uint32_t index = 0;
     const auto& layout = vertexBuffer->getLayout();
     for (const auto& element : layout)
     {
-        //Vertex Layout
-        glEnableVertexAttribArray(index + m_VertexBufferIndexOffset);
-        glVertexAttribPointer(index + m_VertexBufferIndexOffset, 
-            element.getComponentCount(), 
-            ShaderDataTypeToGLBaseType(element.type), 
-            element.normalized ? GL_TRUE : GL_FALSE, 
-            layout.getStride(), 
-            (const void*)(uintptr_t)element.offset);
-        index++;
+        switch (element.type)
+        {
+            case ShaderDataType::Float:
+            case ShaderDataType::Float2:
+            case ShaderDataType::Float3:
+            case ShaderDataType::Float4:
+            case ShaderDataType::Int:
+            case ShaderDataType::Int2:
+            case ShaderDataType::Int3:
+            case ShaderDataType::Int4:
+            case ShaderDataType::Bool:
+            {
+                glEnableVertexAttribArray(m_VertexBufferIndexOffset);
+                glVertexAttribPointer(m_VertexBufferIndexOffset,
+                    element.getComponentCount(),
+                    ShaderDataTypeToGLBaseType(element.type),
+                    element.normalized ? GL_TRUE : GL_FALSE,
+                    layout.getStride(),
+                    (const void*)(uintptr_t)element.offset);
+                m_VertexBufferIndexOffset++;
+                break;
+            }
+            case ShaderDataType::Mat3:
+            case ShaderDataType::Mat4:
+            {
+                uint8_t count = element.getComponentCount();
+                for (uint8_t i = 0; i < count; i++)
+                {
+                    glEnableVertexAttribArray(m_VertexBufferIndexOffset);
+                    glVertexAttribPointer(m_VertexBufferIndexOffset,
+                        count,
+                        ShaderDataTypeToGLBaseType(element.type),
+                        element.normalized ? GL_TRUE : GL_FALSE,
+                        layout.getStride(),
+                        (const void*)(uintptr_t)(element.offset + sizeof(float) * count * i));
+                    glVertexAttribDivisor(m_VertexBufferIndexOffset, 1);
+                    m_VertexBufferIndexOffset++;
+                }
+                break;
+            }
+            default:
+                FH_CORE_ASSERT(false, "Unknown ShaderDataType!");
+        }
     }
 
     m_VertexBuffer.push_back(vertexBuffer);
-    m_VertexBufferIndexOffset += layout.getElements().size();
 }
 
-void OpenGLVertexArray::setIndexBuffer(const Ref<IndexBuffer> &indexBuffer)
+void OpenGLVertexArray::setIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 {
     FH_PROFILE_FUNCTION();
-    
+
     glBindVertexArray(m_RendererID);
     indexBuffer->bind();
 

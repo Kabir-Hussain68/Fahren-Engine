@@ -56,14 +56,13 @@ std::string OpenGLShader::readFile(const std::string &path)
     FH_PROFILE_FUNCTION();
 
     std::string result;
-    std::ifstream in(path, std::ios::in | std::ios::binary);
+    std::ifstream in(path, std::ios::in | std::ios::binary); //Ifstream closes itself due to RAII
     if (in)
     {
         in.seekg(0, std::ios::end);
         result.resize(in.tellg());
         in.seekg(0, std::ios::beg);
         in.read(&result[0], result.size());
-        in.close();
     }
     else
     {
@@ -220,6 +219,13 @@ void OpenGLShader::setFloat(const std::string &name, float value)
     FH_PROFILE_FUNCTION();
 
     uploadUniformFloat(name, value);
+}
+
+void OpenGLShader::setFloat2(const std::string& name, const glm::vec2& value)
+{
+	FH_PROFILE_FUNCTION();
+
+	uploadUniformFloat2(name, value);
 }
 
 void OpenGLShader::setFloat3(const std::string& name, const glm::vec3 &value)

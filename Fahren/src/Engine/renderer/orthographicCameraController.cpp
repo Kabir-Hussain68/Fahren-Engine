@@ -14,22 +14,22 @@ void OrthographicCameraController::onUpdate(Timestep ts)
 {
     FH_PROFILE_FUNCTION();
 
-    if(Input::isKeyPressed(FH_KEY_LEFT))
+    if(Input::isKeyPressed(Key::A))
     {
 		m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
     }
-    if(Input::isKeyPressed(FH_KEY_RIGHT))
+    if(Input::isKeyPressed(Key::D))
     {
         m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
     }
-    if(Input::isKeyPressed(FH_KEY_UP))
+    if(Input::isKeyPressed(Key::W))
     {
 		m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
     }
-    if(Input::isKeyPressed(FH_KEY_DOWN))
+    if(Input::isKeyPressed(Key::S))
     {
 		m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
@@ -37,12 +37,12 @@ void OrthographicCameraController::onUpdate(Timestep ts)
         
     if (m_Rotation)
     {
-        if(Input::isKeyPressed(FH_KEY_A))
+        if(Input::isKeyPressed(Key::Q))
         {
             m_CameraRotation += m_CameraRotationSpeed * ts;
         }
     
-        if(Input::isKeyPressed(FH_KEY_D))
+        if(Input::isKeyPressed(Key::E))
         {
             m_CameraRotation -= m_CameraRotationSpeed * ts;
         }

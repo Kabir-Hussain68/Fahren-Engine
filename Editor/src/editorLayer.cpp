@@ -317,22 +317,26 @@ bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
         //Gizmos
         case Key::Q:
         {
-            m_GizmoType = -1;
+            if (!ImGuizmo::IsUsing())
+                m_GizmoType = -1;
             break;
         }
         case Key::W:
         {
-            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            if (!ImGuizmo::IsUsing())
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
             break;
         }
         case Key::E:
         {
-            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            if (!ImGuizmo::IsUsing())
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
             break;
         }
         case Key::R:
         {
-            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            if (!ImGuizmo::IsUsing())
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
             break;
         }
     }
@@ -349,7 +353,7 @@ void EditorLayer::newScene()
 
 void EditorLayer::openScene()
 {
-    std::string filePath = FileDialogs::openFile("Fahren Scene (*.fahren)\0*,fahren\0");
+    std::string filePath = FileDialogs::openFile("Fahren Scene (*.fahren)\0*.fahren\0");
     if (!filePath.empty())
     {
         m_ActiveScene = createRef<Scene>();

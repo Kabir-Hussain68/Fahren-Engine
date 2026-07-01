@@ -1,7 +1,9 @@
 #pragma once
 
 #include "events.h"
-#include "Engine/core/input.h"
+#include "Engine/core/mouseCodes.h"
+
+using namespace Mouse;
 
 class MouseMovedEvent : public Event
 {
@@ -60,7 +62,7 @@ protected:
 public:
     inline MouseCode getMouseButton() const { return m_Button; }
 
-    EVENT_CLASS_CATEGORY(eventCategoryMouse | eventCategoryInput)
+    EVENT_CLASS_CATEGORY(eventCategoryMouse | eventCategoryInput | eventCategoryMouseButton)
 };
 
 class MouseButtonPressedEvent : public MouseButtonEvent

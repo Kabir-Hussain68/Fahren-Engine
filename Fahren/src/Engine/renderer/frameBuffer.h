@@ -4,8 +4,8 @@
 
 struct FrameBufferSpecification
 {
-    uint32_t width;
-    uint32_t height;
+    uint32_t width = 0;
+    uint32_t height = 0;
     uint32_t samples = 1;
 
     bool swapChainTarget = false;

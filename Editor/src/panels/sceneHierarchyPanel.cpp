@@ -244,14 +244,20 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
     {
         if (ImGui::MenuItem("Camera"))
         {
-            m_SelectionContext.addComponent<CameraComponent>();
-            ImGui::CloseCurrentPopup();
+            if (!m_SelectionContext.hasComponent<CameraComponent>())
+				m_SelectionContext.addComponent<CameraComponent>();
+			else
+				FH_CORE_WARN("This entity already has the Camera Component!");
+			ImGui::CloseCurrentPopup();
         }
 
         if (ImGui::MenuItem("Sprite Renderer"))
         {
-            m_SelectionContext.addComponent<SpriteRendererComponent>();
-            ImGui::CloseCurrentPopup();
+            if (!m_SelectionContext.hasComponent<SpriteRendererComponent>())
+				m_SelectionContext.addComponent<SpriteRendererComponent>();
+			else
+				FH_CORE_WARN("This entity already has the Sprite Renderer Component!");
+			ImGui::CloseCurrentPopup();
         }
 
         ImGui::EndPopup();

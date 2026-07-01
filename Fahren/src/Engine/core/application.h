@@ -13,7 +13,7 @@ class Application
 private:
     static Application* m_Instance;
 
-    std::unique_ptr<Window> m_Window;
+    Scope<Window> m_Window;
     bool m_Running = true;
     bool m_Minimized = false;
     

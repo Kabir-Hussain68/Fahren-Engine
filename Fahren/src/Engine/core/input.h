@@ -1,8 +1,11 @@
 #pragma once
 
-#include "base.h"
+#include <glm/glm.hpp>
+
 #include "keyCodes.h"
 #include "mouseCodes.h"
+
+using namespace Mouse;
 
 class Input
 {
@@ -13,7 +16,7 @@ public:
     static bool isKeyPressed(KeyCode key);
     
     static bool isMouseButtonPressed(MouseCode button);
-    static std::pair<float, float> getMousePosition();
+    static glm::vec2 getMousePosition();
     static float getMouseX();
     static float getMouseY();
 };

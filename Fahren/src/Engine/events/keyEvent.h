@@ -1,7 +1,7 @@
 #pragma once
 
 #include "events.h"
-#include "Engine/core/input.h"
+#include "Engine/core/keyCodes.h"
 
 class KeyEvent : public Event
 {
@@ -20,13 +20,13 @@ public:
 class KeyPressedEvent : public KeyEvent
 {
 private:
-    int m_RepeatCount;
+    uint16_t m_RepeatCount;
 
 public:
-    KeyPressedEvent(KeyCode keyCode, int repeatCount)
+    KeyPressedEvent(KeyCode keyCode, uint16_t repeatCount)
         : KeyEvent(keyCode), m_RepeatCount(repeatCount) {}
 
-    inline int getRepeatCount() const { return m_RepeatCount; }
+    inline uint16_t getRepeatCount() const { return m_RepeatCount; }
 
     std::string toString() const override
     {
