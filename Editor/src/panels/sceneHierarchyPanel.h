@@ -22,4 +22,5 @@ public:
     void onImGuiRender();
 
     Entity getSelectedEntity()const { return m_SelectionContext; }
+    void setSelectedEntity(Entity entity);
 };

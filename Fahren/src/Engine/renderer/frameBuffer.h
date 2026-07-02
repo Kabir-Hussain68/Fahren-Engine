@@ -8,6 +8,7 @@ enum class FrameBufferTextureFormat
 
     //Color
     RGBA8,
+    RED_INTEGER,
 
     //Depth/Stencil
     DEPTH24STENCIL8,
@@ -59,6 +60,9 @@ public:
     virtual void unBind() = 0;
 
     virtual void resize(uint32_t width, uint32_t height) = 0;
+    virtual int readPixel(uint32_t index, int x, int y) = 0;
+
+    virtual void clearAttachments(uint32_t index, int value) = 0; 
 
     static Ref<FrameBuffer> create(const FrameBufferSpecification& spec);
 };

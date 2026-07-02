@@ -28,4 +28,7 @@ public:
     virtual void unBind() override;
 
     virtual void resize(uint32_t width, uint32_t height) override;
+    virtual int readPixel(uint32_t index, int x, int y) override;
+
+    virtual void clearAttachments(uint32_t index, int value); 
 };

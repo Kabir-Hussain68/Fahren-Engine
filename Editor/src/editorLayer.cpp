@@ -23,7 +23,7 @@ void EditorLayer::onAttach()
     m_FaceTexture = Texture2D::create("assets/textures/face.png");
 
     FrameBufferSpecification fbSpec;
-    fbSpec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
+    fbSpec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
     fbSpec.width = 1280;
     fbSpec.height = 720;
     m_FrameBuffer = FrameBuffer::create(fbSpec);
@@ -114,15 +114,35 @@ void EditorLayer::onUpdate(Timestep ts)
     {
         FH_PROFILE_SCOPE("Renderer Prep");
         m_FrameBuffer->bind();
-        RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 0.1f});
+        RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::clear();
-    }
 
+        //Clear entity attachment to -1
+        m_FrameBuffer->clearAttachments(1, -1);
+    }
     
     {
         FH_PROFILE_SCOPE("Renderer Draw");
         
         m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
+
+        auto[mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewportBounds[0].x;
+        my -= m_ViewportBounds[0].y;
+        glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+        my = viewportSize.y -my;
+
+        int mouseX = (int)mx;
+        int mouseY = (int)my;
+
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+        {
+            int pixelData = m_FrameBuffer->readPixel(1, mouseX, mouseY);
+            if (pixelData == -1)
+                m_HoveredEntity = {};
+            else
+                m_HoveredEntity = { entt::entity(pixelData), m_ActiveScene.get() };
+        }   
 
         m_FrameBuffer->unBind();
     }
@@ -208,6 +228,11 @@ void EditorLayer::onImGuiRender()
 
     ImGui::Begin("Stats");
 
+    std::string name = "None";
+    if (m_HoveredEntity)
+        name = m_HoveredEntity.getComponent<TagComponent>().tag;
+    ImGui::Text("Hovered Entity : %s", name.c_str());
+
     auto stats = Renderer2D::getStats();
     ImGui::Text("Renderer2D Stats : ");
     ImGui::Text("Draw Calls : %d", stats.drawCalls);
@@ -220,6 +245,12 @@ void EditorLayer::onImGuiRender()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin("Viewport");
 
+    auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+    auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+    auto viewportOffset = ImGui::GetWindowPos(); //Includes Tab Bar
+    m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+	m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
     m_ViewportFocused = ImGui::IsWindowFocused();
     m_ViewportHovered = ImGui::IsWindowHovered();
     Application::getApplication().getImGuiLayer()->blockEvents(!m_ViewportFocused && !m_ViewportHovered);
@@ -227,8 +258,8 @@ void EditorLayer::onImGuiRender()
     ImVec2 viewPortPanelSize = ImGui::GetContentRegionAvail();
     m_ViewportSize = { viewPortPanelSize.x, viewPortPanelSize.y };
 
-    uint32_t textureID = m_FrameBuffer->getColorAttachmentRendererID();
-    ImGui::Image((ImTextureID)(uintptr_t)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+    uint64_t textureID = m_FrameBuffer->getColorAttachmentRendererID();
+    ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 
     //Gizmos
     Entity selectedEntity = m_SceneHierarchyPanel.getSelectedEntity();
@@ -238,7 +269,7 @@ void EditorLayer::onImGuiRender()
         ImGuizmo::SetDrawlist();
         float windowWidth = (float)ImGui::GetWindowWidth();
         float windowHeight = (float)ImGui::GetWindowHeight();
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+        ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
         //Camera
 
@@ -257,7 +288,7 @@ void EditorLayer::onImGuiRender()
         glm::mat4 transform = tc.getTransform();
 
         //Snapping
-        bool snap = Input::isKeyPressed(Key::LeftControl);
+        bool snap = Input::isKeyPressed(Key::LeftShift);
         float snapValue = 0.5f;
         if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
             snapValue = 45.0f;
@@ -293,7 +324,7 @@ void EditorLayer::onEvent(Event &event)
 
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<KeyPressedEvent>(FH_BIND_EVENT_FN(EditorLayer::onKeyPressed));
-
+    dispatcher.dispatch<MouseButtonPressedEvent>(FH_BIND_EVENT_FN(EditorLayer::onMouseButtonPressed));
 }
 
 bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
@@ -357,6 +388,16 @@ bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
     return false;
 }
 
+bool EditorLayer::onMouseButtonPressed(MouseButtonPressedEvent &event)
+{
+    if (event.getMouseButton() == Mouse::ButtonLeft)
+    {
+        if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::isKeyPressed(Key::LeftControl))
+            m_SceneHierarchyPanel.setSelectedEntity(m_HoveredEntity);
+    }
+    return false;
+}
+
 void EditorLayer::newScene()
 {
     m_ActiveScene = createRef<Scene>();
@@ -380,7 +421,7 @@ void EditorLayer::openScene()
 
 void EditorLayer::saveSceneAs()
 {
-    std::string filePath = FileDialogs::saveFile("Fahren Scene (*.fahren)\0*,fahren\0");
+    std::string filePath = FileDialogs::saveFile("Fahren Scene (*.fahren)\0*.fahren\0");
     if (!filePath.empty())
     {
         SceneSerializer serializer(m_ActiveScene);
