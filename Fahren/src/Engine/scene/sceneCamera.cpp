@@ -28,6 +28,7 @@ void SceneCamera::setPrespective(float fov, float nearClip, float farClip)
 
 void SceneCamera::setViewportSize(uint32_t width, uint32_t height)
 {
+    FH_CORE_ASSERT(width > 0 && height > 0);
     m_AspectRatio = (float)width / (float)height;
     recalculateProjection();
 

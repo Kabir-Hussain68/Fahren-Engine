@@ -17,7 +17,8 @@ public:
 class Sandbox : public Application
 {
 public:
-    Sandbox()
+    Sandbox(ApplicationCommandLineArgs args)
+        : Application("Fahren Test", args)
     {
         pushLayer(new Sandbox2D());
     }
@@ -25,7 +26,7 @@ public:
     ~Sandbox() {}
 };
 
-Application* createApplication()
+Application* createApplication(ApplicationCommandLineArgs args)
 {
-    return new Sandbox();
+    return new Sandbox(args);
 }

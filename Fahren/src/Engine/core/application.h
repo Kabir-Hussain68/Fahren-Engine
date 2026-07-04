@@ -8,9 +8,26 @@
 
 #include "Engine/imGui/imGuiLayer.h"
 
+struct ApplicationCommandLineArgs
+{
+    int count = 0;
+    char** args = nullptr;
+
+    const char* operator[](int index) const
+    {
+        FH_CORE_ASSERT(index < count);
+        return args[index];
+    }
+};
+
+int main(int argc, char** argv);
+
 class Application
 {
 private:
+    friend int main(int argc, char** argv);
+    ApplicationCommandLineArgs m_CommandLineArgs;
+
     static Application* m_Instance;
 
     Scope<Window> m_Window;
@@ -22,13 +39,13 @@ private:
 
     float m_LastFrameTime = 0.0f;
 
+    void run();
+    
     bool onWindowClose(WindowCloseEvent& e);
     bool onWindowResize(WindowResizeEvent& e);
 public:
-    Application(const std::string& name = "Fahren Engine");
-    ~Application();
-
-    void run();
+    Application(const std::string& name = "Fahren Engine", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+    virtual ~Application();
 
     void onEvent(Event& e);
 
@@ -37,8 +54,11 @@ public:
 
     inline static Application& getApplication() { return *m_Instance; }
     inline Window& getWindow() { return *m_Window; }
+    ApplicationCommandLineArgs getCommandLineArgs() const { return m_CommandLineArgs; }
+    ImGuiLayer* getImGuiLayer() { return m_ImGuiLayer; };
 
     void close();
-
-    ImGuiLayer* getImGuiLayer() { return m_ImGuiLayer; };
 };
+
+// To be defined in CLIENT
+Application* createApplication(ApplicationCommandLineArgs args);

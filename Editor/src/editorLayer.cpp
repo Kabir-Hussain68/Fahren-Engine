@@ -30,6 +30,14 @@ void EditorLayer::onAttach()
 
     m_ActiveScene = createRef<Scene>();
 
+    auto commandLineArgs = Application::getApplication().getCommandLineArgs();
+	if (commandLineArgs.count > 1)
+	{
+		auto sceneFilePath = commandLineArgs[1];
+		SceneSerializer serializer(m_ActiveScene);
+		serializer.deserialize(sceneFilePath);
+	}
+
     m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
 #if 0

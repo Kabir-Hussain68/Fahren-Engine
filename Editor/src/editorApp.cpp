@@ -12,8 +12,8 @@ public:
 class Editor : public Application
 {
 public:
-    Editor()
-        : Application("Fahren Editor")
+    Editor(ApplicationCommandLineArgs args)
+        : Application("Fahren Editor", args)
     {
         pushLayer(new EditorLayer());
     }
@@ -21,7 +21,7 @@ public:
     ~Editor() {}
 };
 
-Application* createApplication()
+Application* createApplication(ApplicationCommandLineArgs args)
 {
-    return new Editor();
+    return new Editor(args);
 }

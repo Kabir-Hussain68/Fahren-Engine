@@ -1,4 +1,41 @@
 find_package(OpenGL REQUIRED)
+find_package(Vulkan REQUIRED)
+
+if(WIN32)
+    set(VULKAN_LIB_SUBDIR "Lib")
+else()
+    set(VULKAN_LIB_SUBDIR "lib")
+endif()
+
+get_filename_component(VULKAN_SDK_LIB_DIR "${Vulkan_INCLUDE_DIR}/../${VULKAN_LIB_SUBDIR}" ABSOLUTE)
+
+find_library(SHADERC_LIB
+    NAMES shaderc_shared shaderc_sharedd shaderc_combined
+    PATHS "${VULKAN_SDK_LIB_DIR}"
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+
+find_library(SPIRV_CROSS_CORE_LIB
+    NAMES spirv-cross-core spirv-cross-cored
+    PATHS "${VULKAN_SDK_LIB_DIR}"
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+
+find_library(SPIRV_CROSS_GLSL_LIB
+    NAMES spirv-cross-glsl spirv-cross-glsld
+    PATHS "${VULKAN_SDK_LIB_DIR}"
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+
+message(STATUS "Vulkan include: ${Vulkan_INCLUDE_DIR}")
+message(STATUS "Shaderc: ${SHADERC_LIB}")
+message(STATUS "SPIRV Cross Core: ${SPIRV_CROSS_CORE_LIB}")
+message(STATUS "SPIRV Cross GLSL: ${SPIRV_CROSS_GLSL_LIB}")
+
+set(FH_SHADERC_LIBS ${SHADERC_LIB} ${SPIRV_CROSS_CORE_LIB} ${SPIRV_CROSS_GLSL_LIB})
 
 set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
@@ -63,11 +100,10 @@ elseif(UNIX)
     )
 endif()
 
-
 target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/imgui
-    ${CMAKE_CURRENT_SOURCE_DIR}/requisites/stb_image 
+    ${CMAKE_CURRENT_SOURCE_DIR}/requisites/stb_image
 )
 
 target_precompile_headers(FahrenEngine PRIVATE src/fhpch.h)
@@ -78,6 +114,8 @@ target_link_libraries(FahrenEngine PUBLIC
     glad
     glfw
     OpenGL::GL
+    Vulkan::Vulkan
+    ${FH_SHADERC_LIBS}
     glm::glm
     spdlog::spdlog
     entt

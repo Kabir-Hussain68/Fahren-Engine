@@ -3,6 +3,7 @@
 
 #include "vertexArray.h"
 #include "shader.h"
+#include "uniformBuffer.h"
 #include "renderCommand.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -42,6 +43,14 @@ struct Renderer2DData
     glm::vec4 quadVertexPositions[4];
 
     Renderer2D::Statistics stats;
+
+    struct CameraData
+    {
+        glm::mat4 viewProjectionMatrix;
+    };
+
+    CameraData cameraBuffer;
+    Ref<UniformBuffer> cameraUniformBuffer;
 };
 
 static Renderer2DData* s_Data;
@@ -109,8 +118,6 @@ void Renderer2D::Init()
     }
 
     s_Data->textureShader = Shader::create("assets/shaders/standardShader.glsl");
-    s_Data->textureShader->bind();
-    s_Data->textureShader->setIntArray("u_Textures", samplers, s_Data->maxTextureSlots);
 
     //Setting first texture as the white texture    
     s_Data->textureSlots[0] = s_Data->whiteTexture;
@@ -119,6 +126,8 @@ void Renderer2D::Init()
     s_Data->quadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f};
     s_Data->quadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f};
     s_Data->quadVertexPositions[3] = {-0.5f,  0.5f, 0.0f, 1.0f};
+
+    s_Data->cameraUniformBuffer = UniformBuffer::create(sizeof(Renderer2DData::CameraData), 0);
 }
 
 void Renderer2D::shutdown()
@@ -132,10 +141,8 @@ void Renderer2D::beginScene(const Camera &camera, const glm::mat4 &transform)
 {
     FH_PROFILE_FUNCTION();
 
-    glm::mat4 viewProj = camera.getProjection() * glm::inverse(transform);
-
-    s_Data->textureShader->bind();
-    s_Data->textureShader->setMat4("u_ViewProjection", viewProj);
+    s_Data->cameraBuffer.viewProjectionMatrix = camera.getProjection() * glm::inverse(transform);
+    s_Data->cameraUniformBuffer->setData(&s_Data->cameraBuffer, sizeof(Renderer2DData::CameraData));
 
     startBatch();
 }
@@ -144,10 +151,8 @@ void Renderer2D::beginScene(const EditorCamera& camera)
 {
     FH_PROFILE_FUNCTION();
 
-    glm::mat4 viewProj = camera.getViewProjectionMatrix();
-
-    s_Data->textureShader->bind();
-    s_Data->textureShader->setMat4("u_ViewProjection", viewProj);
+    s_Data->cameraBuffer.viewProjectionMatrix = camera.getViewProjectionMatrix();
+    s_Data->cameraUniformBuffer->setData(&s_Data->cameraBuffer, sizeof(Renderer2DData::CameraData));
 
     startBatch();
 }
@@ -186,6 +191,8 @@ void Renderer2D::flush()
     {
         s_Data->textureSlots[i]->bind(i);
     }
+
+    s_Data->textureShader->bind();
     RenderCommand::drawIndexed(s_Data->quadVertexArray, s_Data->quadIndexCount);
     s_Data->stats.drawCalls++;
 }

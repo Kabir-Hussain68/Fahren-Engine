@@ -143,7 +143,10 @@ void Scene::onComponentAdded<TransformComponent>(Entity entity, TransformCompone
 template<>
 void Scene::onComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 {
-    component.camera.setViewportSize(m_ViewportWidth, m_ViewportHeight);
+    if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
+    {
+        component.camera.setViewportSize(m_ViewportWidth, m_ViewportHeight);
+    }
 }
 
 template<>
