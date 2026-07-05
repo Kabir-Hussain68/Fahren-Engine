@@ -11,6 +11,8 @@
 #include "Engine/utils/platformUtils.h"
 #include "Engine/math/math.h"
 
+extern const std::filesystem::path g_AssetPath;
+
 EditorLayer::EditorLayer()
     : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
 {
@@ -233,6 +235,7 @@ void EditorLayer::onImGuiRender()
     }
 
     m_SceneHierarchyPanel.onImGuiRender();
+    m_ContentBrowserPanel.onImGuiRender();
 
     ImGui::Begin("Stats");
 
@@ -268,6 +271,16 @@ void EditorLayer::onImGuiRender()
 
     uint64_t textureID = m_FrameBuffer->getColorAttachmentRendererID();
     ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
+        {
+            const char* path = (const char*)payLoad->Data;
+            openScene(std::filesystem::path(g_AssetPath) / path);
+        }
+        ImGui::EndDragDropTarget(); 
+    }
 
     //Gizmos
     Entity selectedEntity = m_SceneHierarchyPanel.getSelectedEntity();
@@ -413,19 +426,25 @@ void EditorLayer::newScene()
     m_SceneHierarchyPanel.setContext(m_ActiveScene);
 }
 
+void EditorLayer::openScene(const std::filesystem::path& path)
+{
+    m_ActiveScene = createRef<Scene>();
+    m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+    m_SceneHierarchyPanel.setContext(m_ActiveScene);
+
+    SceneSerializer serializer(m_ActiveScene);
+    serializer.deserialize(path.string());   
+}
+
 void EditorLayer::openScene()
 {
     std::string filePath = FileDialogs::openFile("Fahren Scene (*.fahren)\0*.fahren\0");
     if (!filePath.empty())
     {
-        m_ActiveScene = createRef<Scene>();
-        m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        m_SceneHierarchyPanel.setContext(m_ActiveScene);
-
-        SceneSerializer serializer(m_ActiveScene);
-        serializer.deserialize(filePath);
+        openScene(filePath);
     }
 }
+
 
 void EditorLayer::saveSceneAs()
 {

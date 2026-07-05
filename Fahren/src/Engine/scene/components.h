@@ -8,6 +8,7 @@
 
 #include "sceneCamera.h"
 #include "scriptableEntity.h"
+#include "Engine/renderer/texture.h"
 
 struct TagComponent
 {
@@ -43,6 +44,8 @@ struct TransformComponent
 struct SpriteRendererComponent
 {
     glm::vec4 color = glm::vec4(1.0f);
+    Ref<Texture2D> texture;
+    float tilingFactor = 1.0f;
 
     SpriteRendererComponent() = default;
     SpriteRendererComponent(const SpriteRendererComponent&) = default;

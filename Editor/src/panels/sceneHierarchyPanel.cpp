@@ -6,6 +6,8 @@
 #include <imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
+extern const std::filesystem::path g_AssetPath;
+
 SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &context)
 {
     setContext(context);
@@ -355,6 +357,21 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
 
     drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
     {
+        //Color
         ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+        //Texture
+        ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
+            {
+                const char* path = (const char*)payLoad->Data;
+                std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+                component.texture = Texture2D::create(texturePath.string());
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        ImGui::DragFloat("Tiling Factor", &component.tilingFactor, 0.1f, 0.0f, 10.0f);
     });
 }

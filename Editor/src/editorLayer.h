@@ -2,6 +2,7 @@
 
 #include "Fahren.h"
 #include "panels/sceneHierarchyPanel.h"
+#include "panels/contentBrowserPanel.h"
 
 class EditorLayer : public Layer
 {
@@ -36,6 +37,7 @@ private:
 
     //Panels
     SceneHierarchyPanel m_SceneHierarchyPanel;
+    ContentBrowserPanel m_ContentBrowserPanel;
 
 
     bool onKeyPressed(KeyPressedEvent& event);
@@ -43,6 +45,7 @@ private:
 
     void newScene();
     void saveSceneAs();
+    void openScene(const std::filesystem::path& path);
     void openScene();
 
 public:
