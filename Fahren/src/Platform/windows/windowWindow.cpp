@@ -161,14 +161,19 @@ void windowWindow::onUpdate()
 {
     FH_PROFILE_FUNCTION();
 
-    glfwPollEvents();
-    m_Context->swapBuffers();
+    {
+        FH_PROFILE_SCOPE("glfwPollEvents");
+        glfwPollEvents();
+    }
+
+    {
+        FH_PROFILE_SCOPE("swapBuffers (VSync wait)");
+        m_Context->swapBuffers();
+    }
 }
 
 void windowWindow::setVsync(bool enabled)
 {
-    FH_PROFILE_FUNCTION();
-
     if(enabled)
     {
         glfwSwapInterval(1);

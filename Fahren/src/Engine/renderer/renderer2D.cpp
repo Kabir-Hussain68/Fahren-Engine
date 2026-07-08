@@ -161,8 +161,8 @@ void Renderer2D::beginScene(const OrthographicCamera &camera)
 {
     FH_PROFILE_FUNCTION();
 
-    s_Data->textureShader->bind();
-    s_Data->textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+    s_Data->cameraBuffer.viewProjectionMatrix = camera.getViewProjectionMatrix();
+    s_Data->cameraUniformBuffer->setData(&s_Data->cameraBuffer, sizeof(Renderer2DData::CameraData));
 
     startBatch();   
 }
@@ -179,6 +179,8 @@ void Renderer2D::endScene()
 
 void Renderer2D::flush()
 {
+    FH_PROFILE_FUNCTION();
+
     //Nothing to draw
     if (s_Data->quadIndexCount == 0)
         return;
@@ -199,6 +201,8 @@ void Renderer2D::flush()
 
 void Renderer2D::nextBatch()
 {
+    FH_PROFILE_FUNCTION();
+
     flush();
     startBatch();
 }
@@ -349,6 +353,8 @@ void Renderer2D::drawRotatedQuad(const glm::vec3 &position, const glm::vec2 &siz
 
 void Renderer2D::drawSprite(const glm::mat4 &transform, SpriteRendererComponent &src, int entityID)
 {
+    FH_PROFILE_FUNCTION();
+
     if (src.texture)
         drawQuad(transform, src.texture, src.tilingFactor, src.color, entityID);
     else

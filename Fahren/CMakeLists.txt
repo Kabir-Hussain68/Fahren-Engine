@@ -40,10 +40,12 @@ set(FH_SHADERC_LIBS ${SHADERC_LIB} ${SPIRV_CROSS_CORE_LIB} ${SPIRV_CROSS_GLSL_LI
 set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(TRACY_ENABLE ${FH_ENABLE_TRACY} CACHE BOOL "" FORCE)
 
 add_subdirectory(requisites/GLAD)
 add_subdirectory(requisites/GLFW)
 add_subdirectory(requisites/spdlog)
+add_subdirectory(requisites/tracy)
 
 add_library(ImGui STATIC
     requisites/imgui/imgui.cpp
@@ -120,10 +122,12 @@ target_link_libraries(FahrenEngine PUBLIC
     spdlog::spdlog
     entt
     yaml-cpp::yaml-cpp
+    Tracy::TracyClient
 )
 
 target_compile_definitions(FahrenEngine PUBLIC
     GLFW_INCLUDE_NONE
+    $<$<BOOL:${FH_ENABLE_TRACY}>:TRACY_ENABLE>
     $<$<BOOL:${FH_ENABLE_ASSERTS}>:FH_ENABLE_ASSERTS>
     $<$<BOOL:${WIN32}>:FH_PLATFORM_WINDOWS>
     $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:FH_PLATFORM_LINUX>

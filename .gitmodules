@@ -14,3 +14,6 @@
 [submodule "Fahren/requisites/yaml-cpp"]
 	path = Fahren/requisites/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "Fahren/requisites/tracy"]
+	path = Fahren/requisites/tracy
+	url = https://github.com/wolfpld/tracy.git

@@ -35,16 +35,12 @@ Application::~Application()
 
 void Application::pushLayer(Layer* layer)
 {
-    FH_PROFILE_FUNCTION();
-
     m_LayerStack.pushLayer(layer);
     layer->onAttach();
 }
 
 void Application::pushOverlay(Layer* layer)
 {
-    FH_PROFILE_FUNCTION();
-
     m_LayerStack.pushOverlay(layer);
     layer->onAttach();
 }
@@ -73,8 +69,6 @@ void Application::onEvent(Event& e)
 
 void Application::run()
 {
-    FH_PROFILE_FUNCTION();
-
     while(m_Running)
     {
         FH_PROFILE_SCOPE("RunLoop");
@@ -107,6 +101,8 @@ void Application::run()
         m_ImGuiLayer->end();
 
         m_Window->onUpdate();
+
+        FH_PROFILE_FRAME();
     }
 }
 

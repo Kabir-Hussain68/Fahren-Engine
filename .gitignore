@@ -6,4 +6,5 @@ compile_commands.json
 *.out
 *.exe
 .vscode/
-FahrenProfile-*.json
+Editor/assets/cache
+Tools/

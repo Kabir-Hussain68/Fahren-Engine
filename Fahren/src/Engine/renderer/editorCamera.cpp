@@ -60,6 +60,8 @@ float EditorCamera::zoomSpeed() const
 
 void EditorCamera::onUpdate(Timestep ts)
 {
+    FH_PROFILE_FUNCTION();
+
     if (Input::isKeyPressed(Key::LeftControl))
     {
         const glm::vec2& mouse{ Input::getMouseX(), Input::getMouseY() };

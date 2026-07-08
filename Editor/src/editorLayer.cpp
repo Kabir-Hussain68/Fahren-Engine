@@ -147,6 +147,8 @@ void EditorLayer::onUpdate(Timestep ts)
 
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
         {
+            FH_PROFILE_SCOPE("Mouse picking readPixel");
+
             int pixelData = m_FrameBuffer->readPixel(1, mouseX, mouseY);
             if (pixelData == -1)
                 m_HoveredEntity = {};
@@ -277,8 +279,16 @@ void EditorLayer::onImGuiRender()
         if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
         {
             const char* path = (const char*)payLoad->Data;
-            openScene(std::filesystem::path(g_AssetPath) / path);
-        }
+            std::filesystem::path scenePath = std::filesystem::path(g_AssetPath) / path;
+            if (scenePath.extension() == ".fahren")
+            {
+                openScene(scenePath);
+            }
+            else
+            {
+                FH_CORE_WARN("Cannot drop file type '{0}' onto viewport", scenePath.extension().string());
+            }
+            }
         ImGui::EndDragDropTarget(); 
     }
 

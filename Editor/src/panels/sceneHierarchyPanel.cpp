@@ -360,18 +360,47 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
         //Color
         ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
         //Texture
-        ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
-        if (ImGui::BeginDragDropTarget())
-        {
-            if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
-            {
-                const char* path = (const char*)payLoad->Data;
-                std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                component.texture = Texture2D::create(texturePath.string());
-            }
-            ImGui::EndDragDropTarget();
-        }
+        ImGui::PushID("TextureField");
 
-        ImGui::DragFloat("Tiling Factor", &component.tilingFactor, 0.1f, 0.0f, 10.0f);
+    float thumbnailSize = 64.0f;
+
+    if (component.texture)
+    {
+        ImGui::ImageButton("##texture", (ImTextureID)component.texture->getRendererID(),
+            { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+    }
+    else
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.35f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::Button("##texture_empty", { thumbnailSize, thumbnailSize });
+        ImGui::PopStyleColor(3);
+    }
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
+        {
+            const char* path = (const char*)payLoad->Data;
+            std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+            component.texture = Texture2D::create(texturePath.string());
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    if (ImGui::BeginPopupContextItem("##texture_context"))
+    {
+        if (ImGui::MenuItem("Clear"))
+            component.texture = nullptr;
+        ImGui::EndPopup();
+    }
+
+    ImGui::SameLine();
+    ImGui::Text("Texture");
+
+    ImGui::PopID();
+
+    ImGui::DragFloat("Tiling Factor", &component.tilingFactor, 0.1f, 1.0f, 10.0f);
     });
 }
