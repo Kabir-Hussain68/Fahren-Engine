@@ -22,7 +22,8 @@ void EditorLayer::onAttach()
 {
     FH_PROFILE_FUNCTION();
 
-    m_FaceTexture = Texture2D::create("assets/textures/face.png");
+    m_IconPlay = Texture2D::create("resources/play/play.png");
+    m_IconStop = Texture2D::create("resources/play/stop.png");
 
     FrameBufferSpecification fbSpec;
     fbSpec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
@@ -112,13 +113,6 @@ void EditorLayer::onUpdate(Timestep ts)
         m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
     }
 
-    if (m_ViewportFocused)
-    {
-        m_CameraController.onUpdate(ts);
-        m_EditorCamera.onUpdate(ts);
-    }
-
-
     Renderer2D::resetStats();
 
     {
@@ -129,13 +123,31 @@ void EditorLayer::onUpdate(Timestep ts)
 
         //Clear entity attachment to -1
         m_FrameBuffer->clearAttachments(1, -1);
+
+        switch(m_SceneState)
+        {
+            case SceneState::Edit:
+            {
+                if (m_ViewportFocused)
+                {
+                    m_CameraController.onUpdate(ts);
+                    m_EditorCamera.onUpdate(ts);
+                }
+
+                m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
+                break;
+            }
+            case SceneState::Play:
+            {
+                m_ActiveScene->onUpdateRuntime(ts);
+                break;
+            }
+        }
     }
     
     {
         FH_PROFILE_SCOPE("Renderer Draw");
         
-        m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
-
         auto[mx, my] = ImGui::GetMousePos();
         mx -= m_ViewportBounds[0].x;
         my -= m_ViewportBounds[0].y;
@@ -345,6 +357,37 @@ void EditorLayer::onImGuiRender()
     ImGui::End();
     ImGui::PopStyleVar();
 
+    UI_Toolbar();
+
+    ImGui::End();
+}
+
+void EditorLayer::UI_Toolbar()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+    auto& colors = ImGui::GetStyle().Colors;
+    auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+    auto& buttonActive = colors[ImGuiCol_ButtonHovered];
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+    ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    float size = ImGui::GetWindowHeight() - 4.0f;
+    Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
+    ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+    if (ImGui::ImageButton("##toolbarbutton", (ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0)))
+    {
+        if (m_SceneState == SceneState::Edit)
+            onScenePlay();
+        else if (m_SceneState == SceneState::Play)
+            onSceneStop();
+    }
+
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(3);
     ImGui::End();
 }
 
@@ -356,6 +399,16 @@ void EditorLayer::onEvent(Event &event)
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<KeyPressedEvent>(FH_BIND_EVENT_FN(EditorLayer::onKeyPressed));
     dispatcher.dispatch<MouseButtonPressedEvent>(FH_BIND_EVENT_FN(EditorLayer::onMouseButtonPressed));
+}
+
+void EditorLayer::onScenePlay()
+{
+    m_SceneState = SceneState::Play;
+}
+
+void EditorLayer::onSceneStop()
+{
+    m_SceneState = SceneState::Edit;
 }
 
 bool EditorLayer::onKeyPressed(KeyPressedEvent &event)

@@ -7,6 +7,13 @@
 class EditorLayer : public Layer
 {
 private:
+    enum class SceneState
+    {
+        Edit = 0, Play = 1
+    };
+
+    SceneState m_SceneState = SceneState::Edit;
+
     OrthographicCameraController m_CameraController;
 
     Ref<Shader> m_FlatColorShader;
@@ -35,10 +42,13 @@ private:
     //Gizmos
     int m_GizmoType = -1;
 
+    //UI
+    Ref<Texture2D> m_IconPlay;
+    Ref<Texture2D> m_IconStop;
+
     //Panels
     SceneHierarchyPanel m_SceneHierarchyPanel;
     ContentBrowserPanel m_ContentBrowserPanel;
-
 
     bool onKeyPressed(KeyPressedEvent& event);
     bool onMouseButtonPressed(MouseButtonPressedEvent& event);
@@ -58,4 +68,10 @@ public:
     void onUpdate(Timestep ts) override;
     virtual void onImGuiRender() override;
     void onEvent(Event& event) override;
+
+    void onScenePlay();
+    void onSceneStop();
+
+    // UI Panels
+    void UI_Toolbar();
 };
