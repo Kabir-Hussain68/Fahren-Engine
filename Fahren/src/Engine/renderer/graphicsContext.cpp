@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "Platform/OpenGL/openGLContext.h"
 
+// Checks which API is being used and creates the graphics context for that API
 Scope<GraphicsContext> GraphicsContext::create(void* window)
 {
 	switch (Renderer::getAPI())

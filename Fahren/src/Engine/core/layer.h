@@ -3,6 +3,7 @@
 #include "Engine/events/events.h"
 #include "Engine/core/timestep.h"
 
+// A virtul layer class which other implementation layers will inhert and will pass them for execution
 class Layer
 {
 protected:

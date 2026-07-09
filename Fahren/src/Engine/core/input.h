@@ -7,6 +7,7 @@
 
 using namespace Mouse;
 
+// Static class with only declaration, definition in implementation class
 class Input
 {
 private:

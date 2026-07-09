@@ -3,6 +3,7 @@
 #include <memory>
 #include "Engine/renderer/buffer.h"
 
+// Virtual functions
 class VertexArray
 {
 public:

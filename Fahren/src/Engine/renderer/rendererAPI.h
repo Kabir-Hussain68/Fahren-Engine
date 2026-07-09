@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include "vertexArray.h"
 
+// A class which selects which API is currently being used
+// A virtual class with definitions in the declaration
 class RendererAPI
 {
 private:

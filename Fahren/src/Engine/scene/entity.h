@@ -15,6 +15,8 @@ public:
     Entity(entt::entity handle, Scene* scene);
     Entity(const Entity& other) = default;
 
+    // For adding a component to the entity
+    // It checks if the entity already has the component, if not the component is added 
     template<typename T, typename... Args>
     T& addComponent(Args&&... args)
     {
@@ -24,6 +26,8 @@ public:
         return component;
     }
 
+    // For getting a component from the entity
+    // It checks if the entity already has the component, if true, it returns 
     template<typename T>
     T& getComponent()
     {
@@ -31,12 +35,16 @@ public:
         return m_Scene->m_Registry.get<T>(m_EntityHandle);
     }
 
+    // For adding a component to the entity
+    // It checks if the entity already has the component, it returns true
     template<typename T>
     bool hasComponent()
     {
         return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
     }
 
+    // For removing a component from the entity
+    // It checks if the entity already has the component, if true the component is removed 
     template<typename T>
     void removeComponent()
     {
@@ -44,6 +52,8 @@ public:
         m_Scene->m_Registry.remove<T>(m_EntityHandle);
     }
 
+    // Helper functions for comparing entities
+    // entt::entt (Entity) is just a uint32_t
     operator bool() const { return m_EntityHandle != entt::null; }
     operator entt::entity() const { return m_EntityHandle; }
     operator uint32_t() const { return (uint32_t)m_EntityHandle; }

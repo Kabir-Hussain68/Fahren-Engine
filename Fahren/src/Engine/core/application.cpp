@@ -16,6 +16,9 @@ Application::Application(const std::string& name, ApplicationCommandLineArgs arg
     FH_CORE_ASSERT(!m_Instance, "Application already exists");
     m_Instance = this;
 
+
+    //Create window and setup event callback
+    //Initialize the renderer and setup ImGui Layer
     m_Window = Window::createWindow(windowProps(name));
     m_Window->setEventCallback(FH_BIND_EVENT_FN(onEvent));
 
@@ -54,6 +57,8 @@ void Application::onEvent(Event& e)
 {
     FH_PROFILE_FUNCTION();
 
+    //Handles if the window is closed or resized
+    //It goes through all the events in all the layers and handles them, by calling onEvent
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowCloseEvent>(FH_BIND_EVENT_FN(onWindowClose));
     dispatcher.dispatch<WindowResizeEvent>(FH_BIND_EVENT_FN(onWindowResize));
@@ -69,6 +74,7 @@ void Application::onEvent(Event& e)
 
 void Application::run()
 {
+    // Main Loop of the game engine
     while(m_Running)
     {
         FH_PROFILE_SCOPE("RunLoop");
@@ -77,6 +83,8 @@ void Application::run()
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime = time;
 
+        // If the window is minimized stop all the layers
+        // If thw window is not minimized continue running the onupdate 
         if(!m_Minimized)
         {
             {
@@ -89,6 +97,8 @@ void Application::run()
             }
         }
         
+        // Start the ImGui window, loop through all the layers, if ImGui Layer, render it
+        // Begin initializes ImGui starts the new frame, end renders the frame and sets the context
         m_ImGuiLayer->begin();
         {
             FH_PROFILE_SCOPE("LayerStack onImGuiRender");
@@ -100,18 +110,22 @@ void Application::run()
         }
         m_ImGuiLayer->end();
 
+        // Runs the window on update
+        // Swaps buffers and polls events
         m_Window->onUpdate();
 
         FH_PROFILE_FRAME();
     }
 }
 
+// If window is terminated
 bool Application::onWindowClose(WindowCloseEvent& e)
 {
     m_Running = false;
     return true;
 }
 
+// Handles the case of window minimized 
 bool Application::onWindowResize(WindowResizeEvent& e)
 {
     FH_PROFILE_FUNCTION();

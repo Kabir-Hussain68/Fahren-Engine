@@ -5,6 +5,7 @@
 
 #include "Platform/OpenGL/openGLFrameBuffer.h"
 
+// Checks which API is being used and creates the frame buffer object for that API
 Ref<FrameBuffer> FrameBuffer::create(const FrameBufferSpecification &spec)
 {
     switch (Renderer::getAPI())

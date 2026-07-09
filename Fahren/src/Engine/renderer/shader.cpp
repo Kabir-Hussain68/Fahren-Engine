@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "Platform/OpenGL/openGLShader.h"
 
+// Loads the shader just by the path 
 Ref<Shader> Shader::create(const std::string &path)
 {
     switch (Renderer::getAPI())
@@ -20,6 +21,7 @@ Ref<Shader> Shader::create(const std::string &path)
     return nullptr; 
 }
 
+// Creates a shader by taking its name, vertex and fragment 
 Ref<Shader> Shader::create(const std::string& name, const std::string& vertexSrx, const std::string& fragmentSrc)
 {
     switch (Renderer::getAPI())
@@ -36,6 +38,7 @@ Ref<Shader> Shader::create(const std::string& name, const std::string& vertexSrx
     return nullptr;
 }
 
+// Adds the shader to shader map with a name
 void ShaderLibrary::add(const std::string &name, const Ref<Shader> &shader)
 {
     FH_CORE_ASSERT(exists(name), "Shader already exists!");
@@ -48,6 +51,7 @@ void ShaderLibrary::add(const Ref<Shader> &shader)
     add(name, shader);
 }
 
+// Loads the shader from shader map with a name
 Ref<Shader> ShaderLibrary::load(const std::string &path)
 {
     auto shader = Shader::create(path);
@@ -62,6 +66,7 @@ Ref<Shader> ShaderLibrary::load(const std::string &name, const std::string &path
     return shader;
 }
 
+// Returns the required shader
 Ref<Shader> ShaderLibrary::get(const std::string &name)
 {
     FH_CORE_ASSERT(!exists(name), "Shader not found!");

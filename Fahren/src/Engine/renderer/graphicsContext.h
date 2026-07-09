@@ -1,5 +1,6 @@
 #pragma once
 
+// Vitual class with functions only
 class GraphicsContext
 {
 private:

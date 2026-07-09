@@ -4,6 +4,7 @@
 #include "Engine/renderer/renderer.h"
 #include "Platform/OpenGL/openGLUniformBuffer.h"
 
+// Checks the API for the correct implementation
 Ref<UniformBuffer> UniformBuffer::create(uint32_t size, uint32_t binding)
 {
     switch (Renderer::getAPI())

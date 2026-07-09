@@ -12,6 +12,7 @@ struct windowProps
         : title(title), width(width), height(height)    {}
 };
 
+// A virtual class with only function definitions
 class Window
 {
 public:

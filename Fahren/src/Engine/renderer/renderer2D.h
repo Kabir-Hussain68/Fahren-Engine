@@ -6,6 +6,7 @@
 #include "editorCamera.h"
 #include "Engine/scene/components.h"
 
+// The 2D rendering, used to draw all the 2D things
 class Renderer2D
 {
 private:

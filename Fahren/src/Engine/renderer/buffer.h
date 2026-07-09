@@ -1,10 +1,12 @@
 #pragma once
 
+// A enum for all the openGL classes
 enum class ShaderDataType
 {
     None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 };
 
+// Size conversation of openGL classes to the C++ standard
 static uint32_t ShaderDataTypeSize(ShaderDataType type)
 {
     switch (type)
@@ -26,6 +28,7 @@ static uint32_t ShaderDataTypeSize(ShaderDataType type)
     return 0;
 }
 
+// A struct which holds the layout of the data to pass to the GPU
 struct BufferElements
 {
     BufferElements() {}
@@ -62,6 +65,7 @@ struct BufferElements
     }
 };
 
+// A class which calculates the layout of the data to send to the GPU
 class BufferLayout
 {
 private:
@@ -98,6 +102,7 @@ public:
     std::vector<BufferElements>::const_iterator end() const { return m_Elements.end(); }
 };
 
+// Below are just virtual classes with varying implementation according to the API
 class VertexBuffer
 {
 public:

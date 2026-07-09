@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+// A generic class with helper functions
 class Camera
 {
 protected:

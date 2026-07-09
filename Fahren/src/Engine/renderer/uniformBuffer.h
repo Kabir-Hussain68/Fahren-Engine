@@ -2,6 +2,7 @@
 
 #include "Engine/core/base.h"
 
+// Virtual functions
 class UniformBuffer
 {
 public:

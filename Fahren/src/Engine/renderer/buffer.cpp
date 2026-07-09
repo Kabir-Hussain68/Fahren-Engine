@@ -3,8 +3,9 @@
 
 #include "renderer.h"
 
-#include "Platform/OpenGL/openGLBuffPer.h"
+#include "Platform/OpenGL/openGLBuffer.h"
 
+// Checks which API is being used and creates the buffer object for that API
 Ref<VertexBuffer> VertexBuffer::create(uint32_t size)
 {
     switch (Renderer::getAPI())
@@ -21,6 +22,7 @@ Ref<VertexBuffer> VertexBuffer::create(uint32_t size)
     return nullptr;
 }
 
+// Checks which API is being used and creates the buffer object for that API
 Ref<VertexBuffer> VertexBuffer::create(float *vertices, uint32_t size)
 {
     switch (Renderer::getAPI())
@@ -37,6 +39,7 @@ Ref<VertexBuffer> VertexBuffer::create(float *vertices, uint32_t size)
     return nullptr;
 }
 
+// Checks which API is being used and creates the buffer object for that API
 Ref<IndexBuffer> IndexBuffer::create(uint32_t* indices, uint32_t size)
 {
     switch (Renderer::getAPI())

@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// Definition of a quad
 struct QuadVertex
 {
     glm::vec3 position;
@@ -21,22 +22,29 @@ struct QuadVertex
     int entityID;
 };
 
+// Batch rendering data
 struct Renderer2DData
 {
+    // How many quads to draw in a single draw call
+    // How many texture to bind before doing a seperate draw call
     static const uint32_t maxQuads = 10000;
     static const uint32_t maxVertices = maxQuads * 4;
     static const uint32_t maxIndices = maxQuads * 6;
     static const uint32_t maxTextureSlots = 32;
 
+    // Holding the buffers, shader and texture
+    // To pass to the GPU
     Ref<VertexArray> quadVertexArray;
     Ref<VertexBuffer> quadVertexBuffer;
     Ref<Shader> textureShader;
     Ref<Texture2D> whiteTexture;
 
+    // The actual data of the vertex buffer and a pointer to thar
     uint32_t quadIndexCount = 0;
     QuadVertex* quadVertexBufferBase = nullptr;
     QuadVertex* quadVertexBufferPtr = nullptr;
 
+    // A array of all the textures, with their index
     std::array<Ref<Texture2D>, maxTextureSlots> textureSlots; 
     uint32_t textureSlotIndex = 1; // 0 = white texture
 
@@ -44,11 +52,14 @@ struct Renderer2DData
 
     Renderer2D::Statistics stats;
 
+    // Camera data to pass to the shader
     struct CameraData
     {
         glm::mat4 viewProjectionMatrix;
     };
 
+    // The camera buffer data and the uniform buffer 
+    // To pass to the shader
     CameraData cameraBuffer;
     Ref<UniformBuffer> cameraUniformBuffer;
 };
@@ -57,9 +68,12 @@ static Renderer2DData* s_Data;
 
 void Renderer2D::startBatch()
 {
+    // Initialize the index count to 0
+    // The buffer pointer points to the buffer data (which we gonna pass)
     s_Data->quadIndexCount = 0;
-	s_Data->quadVertexBufferPtr= s_Data->quadVertexBufferBase;
+	s_Data->quadVertexBufferPtr = s_Data->quadVertexBufferBase;
 
+    // Assigns the texture slot to 1 (0 is white texture)
 	s_Data->textureSlotIndex = 1;
 }
 
@@ -72,6 +86,7 @@ void Renderer2D::Init()
     //VAO
     s_Data->quadVertexArray = VertexArray::create();
 
+    // The vertex data layout to pass to the shader 
     s_Data->quadVertexBuffer = VertexBuffer::create(s_Data->maxVertices * sizeof(QuadVertex));
     s_Data->quadVertexBuffer->setLayout({
         { ShaderDataType::Float3, "a_Position"     },
@@ -81,12 +96,16 @@ void Renderer2D::Init()
         { ShaderDataType::Float,  "a_TilingFactor" },
         { ShaderDataType::Int,    "a_EntityID"     }
     });
+    // Sets the vertex data to the vertex buffer with proper layout
     s_Data->quadVertexArray->addVertexBuffer(s_Data->quadVertexBuffer);
 
+    // Sets the data of the vertex buffer
     s_Data->quadVertexBufferBase = new QuadVertex[s_Data->maxIndices];
     
+    // Initializes the indices
     uint32_t* quadIndicies  = new uint32_t[s_Data->maxIndices];
 
+    // Sets the quad indices (2 Triangles (0, 1, 2), (2, 3, 0))
     uint32_t offset = 0;
     for (uint32_t i = 0; i < s_Data->maxIndices; i += 6)
     {
@@ -101,32 +120,39 @@ void Renderer2D::Init()
         offset += 4;
     }
 
+    // Creates and stes the index buffer
     Ref<IndexBuffer> quadIB;
     quadIB = IndexBuffer::create(quadIndicies, s_Data->maxIndices);
     s_Data->quadVertexArray->setIndexBuffer(quadIB);
     
+    // We dont need the indices afer setting for delete them
     delete[] quadIndicies;
 
+    // Creates the white texture and sets it data to the batch renderer data
     s_Data->whiteTexture = Texture2D::create(1, 1);
     uint32_t whiteTextureData = 0xffffffff;
     s_Data->whiteTexture->setData(&whiteTextureData, sizeof(uint32_t));
 
+    // Initializes all the textures to just the slot index
     int32_t samplers[s_Data->maxTextureSlots];
     for (uint32_t i = 0; i < s_Data->maxTextureSlots; i++)
     {
         samplers[i] = i;
     }
 
+    // Creates the standard shader (this function does the compilation and everything)
     s_Data->textureShader = Shader::create("assets/shaders/standardShader.glsl");
 
     //Setting first texture as the white texture    
     s_Data->textureSlots[0] = s_Data->whiteTexture;
 
+    // Quad vertex position
     s_Data->quadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
     s_Data->quadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f};
     s_Data->quadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f};
     s_Data->quadVertexPositions[3] = {-0.5f,  0.5f, 0.0f, 1.0f};
 
+    // Sets the camera buffer to pass to the GPU
     s_Data->cameraUniformBuffer = UniformBuffer::create(sizeof(Renderer2DData::CameraData), 0);
 }
 
@@ -141,6 +167,7 @@ void Renderer2D::beginScene(const Camera &camera, const glm::mat4 &transform)
 {
     FH_PROFILE_FUNCTION();
 
+    // Statrts the scene by initializing all the data of the batch renderer
     s_Data->cameraBuffer.viewProjectionMatrix = camera.getProjection() * glm::inverse(transform);
     s_Data->cameraUniformBuffer->setData(&s_Data->cameraBuffer, sizeof(Renderer2DData::CameraData));
 
@@ -151,6 +178,7 @@ void Renderer2D::beginScene(const EditorCamera& camera)
 {
     FH_PROFILE_FUNCTION();
 
+    // Statrts the scene by initializing all the data of the batch renderer
     s_Data->cameraBuffer.viewProjectionMatrix = camera.getViewProjectionMatrix();
     s_Data->cameraUniformBuffer->setData(&s_Data->cameraBuffer, sizeof(Renderer2DData::CameraData));
 
@@ -161,6 +189,7 @@ void Renderer2D::beginScene(const OrthographicCamera &camera)
 {
     FH_PROFILE_FUNCTION();
 
+    // Statrts the scene by initializing all the data of the batch renderer
     s_Data->cameraBuffer.viewProjectionMatrix = camera.getViewProjectionMatrix();
     s_Data->cameraUniformBuffer->setData(&s_Data->cameraBuffer, sizeof(Renderer2DData::CameraData));
 
@@ -171,6 +200,7 @@ void Renderer2D::endScene()
 {
     FH_PROFILE_FUNCTION();
 
+    // Sets all the data and flushes
     uint32_t dataSize = (uint32_t)((uint8_t*)s_Data->quadVertexBufferPtr - (uint8_t*)s_Data->quadVertexBufferBase);
     s_Data->quadVertexBuffer->setData(s_Data->quadVertexBufferBase, dataSize);
 

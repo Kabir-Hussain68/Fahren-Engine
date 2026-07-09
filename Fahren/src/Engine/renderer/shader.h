@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+// May need to change this application because uniforms are only OpenGL shader functions (if Vulkan)
+// Virual functions, implementation different for particular API
 class Shader
 {
 private:
@@ -29,6 +31,7 @@ public:
     static Ref<Shader> create(const std::string& name, const std::string& vertexSrx, const std::string& fragmentSrc);
 };
 
+// A storage for all the shaders
 class ShaderLibrary
 {
 private:

@@ -5,6 +5,7 @@
 
 RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
 
+// Selects which API is currently being used
 Scope<RendererAPI> RendererAPI::create()
 {
 	switch (s_API)

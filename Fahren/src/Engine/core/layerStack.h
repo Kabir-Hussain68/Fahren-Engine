@@ -1,5 +1,6 @@
 #include "layer.h"
 
+// A class which stores the layers in a stack format for exection
 class LayerStack
 {
 private:

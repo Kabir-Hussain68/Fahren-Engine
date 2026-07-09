@@ -4,6 +4,7 @@
 #include "orthographicCamera.h"
 #include "shader.h"
 
+// The Main renderer of the engine
 class Renderer
 {
 private:

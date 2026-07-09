@@ -45,6 +45,7 @@ struct FrameBufferSpecification
     bool swapChainTarget = false;
 };
 
+// Virtual class with implentation varying to the API
 class FrameBuffer
 {
 private:

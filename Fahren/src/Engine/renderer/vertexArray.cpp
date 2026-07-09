@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "Platform/OpenGL/openGLVertexArray.h"
 
+// Checks which API is currently being used
 Ref<VertexArray> VertexArray::create()
 {    
     switch (Renderer::getAPI())

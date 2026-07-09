@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "Platform/OpenGL/openGLTexture.h"
 
+// Creates the particular texture based on the API
 Ref<Texture2D> Texture2D::create(uint32_t width, uint32_t height)
 {
     switch (Renderer::getAPI())

@@ -10,6 +10,8 @@
 #include "scriptableEntity.h"
 #include "Engine/renderer/texture.h"
 
+// Components which the entities can be assigned
+
 struct TagComponent
 {
     std::string tag;
