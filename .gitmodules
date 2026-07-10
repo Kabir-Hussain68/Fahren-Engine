@@ -17,3 +17,6 @@
 [submodule "Fahren/requisites/tracy"]
 	path = Fahren/requisites/tracy
 	url = https://github.com/wolfpld/tracy.git
+[submodule "Fahren/requisites/box2d"]
+	path = Fahren/requisites/box2d
+	url = https://github.com/erincatto/box2d.git
