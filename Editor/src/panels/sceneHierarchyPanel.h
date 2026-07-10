@@ -4,6 +4,8 @@
 #include "Engine/scene/scene.h"
 #include "Engine/scene/entity.h"
 
+#include "Engine/renderer/texture.h"
+
 class SceneHierarchyPanel
 {
 private:

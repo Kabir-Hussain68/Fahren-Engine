@@ -22,8 +22,8 @@ void EditorLayer::onAttach()
 {
     FH_PROFILE_FUNCTION();
 
-    m_IconPlay = Texture2D::create("resources/play/play.png");
-    m_IconStop = Texture2D::create("resources/play/stop.png");
+    m_IconPlay = Texture2D::create("resources/icons/play/play.png");
+    m_IconStop = Texture2D::create("resources/icons/play/stop.png");
 
     FrameBufferSpecification fbSpec;
     fbSpec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
@@ -404,11 +404,13 @@ void EditorLayer::onEvent(Event &event)
 void EditorLayer::onScenePlay()
 {
     m_SceneState = SceneState::Play;
+    m_ActiveScene->onRuntimeStart();
 }
 
 void EditorLayer::onSceneStop()
 {
     m_SceneState = SceneState::Edit;
+    m_ActiveScene->onRuntimeStop();
 }
 
 bool EditorLayer::onKeyPressed(KeyPressedEvent &event)

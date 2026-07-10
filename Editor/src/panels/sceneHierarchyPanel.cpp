@@ -8,6 +8,22 @@
 
 extern const std::filesystem::path g_AssetPath;
 
+static Ref<Texture2D> getSettingsIcon()
+{
+    static Ref<Texture2D> settingsIcon = Texture2D::create("resources/icons/properties/settings.png");
+    return settingsIcon;
+}
+
+static void drawFullWidthSeparator()
+{
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImVec2 p1 = ImGui::GetCursorScreenPos();
+    float width = ImGui::GetContentRegionAvail().x;
+    ImVec2 p2 = ImVec2(p1.x + width, p1.y);
+    drawList->AddLine(p1, p2, ImGui::GetColorU32(ImGuiCol_Separator));
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
+}
+
 SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene> &context)
 {
     setContext(context);
@@ -34,7 +50,6 @@ void SceneHierarchyPanel::onImGuiRender()
         m_SelectionContext = {};
     }
 
-    //Right Click blank space
     if (ImGui::BeginPopupContextWindow("WindowContextMenu", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
     {
         if (ImGui::MenuItem("Empty Entity"))
@@ -87,9 +102,8 @@ void SceneHierarchyPanel::drawEntityNode(Entity entity)
 
     if (opened)
     {
-        //Havent implemented drop down menu yet
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-        bool opened = ImGui::TreeNodeEx((void*)9817239, flags, "%s", tag.c_str());  // <-- second TreeNodeEx call
+        bool opened = ImGui::TreeNodeEx((void*)9817239, flags, "%s", tag.c_str());
         if (opened)
             ImGui::TreePop();
         ImGui::TreePop();
@@ -112,7 +126,7 @@ static void drawVec3Controls(const std::string& label, glm::vec3& values, float 
 
     ImGui::PushID(label.c_str());
 
-    ImGui::Columns(2);
+    ImGui::Columns(2, nullptr, false);
     ImGui::SetColumnWidth(0, columnWidth);
     ImGui::Text("%s", label.c_str());
     ImGui::NextColumn();
@@ -175,6 +189,91 @@ static void drawVec3Controls(const std::string& label, glm::vec3& values, float 
     ImGui::Columns(1);
 
     ImGui::PopID();
+
+    drawFullWidthSeparator();
+}
+
+static void drawTextureField(const std::string& label, Ref<Texture2D>& texture, const std::filesystem::path& assetPath, float columnWidth = 100.0f)
+{
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2, nullptr, false);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text("%s", label.c_str());
+    ImGui::NextColumn();
+
+    float thumbnailSize = 40.0f;
+
+    if (texture)
+    {
+        ImGui::ImageButton("##texture", (ImTextureID)texture->getRendererID(),
+            { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+    }
+    else
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.35f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::Button("##texture_empty", { thumbnailSize, thumbnailSize });
+        ImGui::PopStyleColor(3);
+    }
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
+        {
+            const char* path = (const char*)payLoad->Data;
+            std::filesystem::path texturePath = assetPath / path;
+            texture = Texture2D::create(texturePath.string());
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    if (ImGui::BeginPopupContextItem("##texture_context"))
+    {
+        if (ImGui::MenuItem("Clear"))
+            texture = nullptr;
+        ImGui::EndPopup();
+    }
+
+    ImGui::Columns(1);
+    ImGui::PopID();
+
+    drawFullWidthSeparator();
+}
+
+static void drawFloatField(const std::string& label, float& value, float speed, float minVal, float maxVal, float columnWidth = 100.0f)
+{
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2, nullptr, false);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text("%s", label.c_str());
+    ImGui::NextColumn();
+
+    ImGui::DragFloat("##Value", &value, speed, minVal, maxVal);
+
+    ImGui::Columns(1);
+    ImGui::PopID();
+
+    drawFullWidthSeparator();
+}
+
+static void drawColorField(const std::string& label, glm::vec4& color, float columnWidth = 100.0f)
+{
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2, nullptr, false);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text("%s", label.c_str());
+    ImGui::NextColumn();
+
+    ImGui::ColorEdit4("##Color", glm::value_ptr(color));
+
+    ImGui::Columns(1);
+    ImGui::PopID();
+
+    drawFullWidthSeparator();
 }
 
 template<typename T, typename UIFunction>
@@ -186,18 +285,29 @@ static void drawComponent(const std::string& name, Entity entity, UIFunction uiF
         auto& component = entity.getComponent<T>();
         ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
+        ImGui::Dummy(ImVec2(0.0f, 4.0f));
+
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
         float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
-        ImGui::Separator();
 
         bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "%s", name.c_str());
         ImGui::PopStyleVar();
 
-        ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-        if (ImGui::Button("+", ImVec2(lineHeight, lineHeight)))
+        float iconSize = 14.0f;
+        ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f - 4.0f);
+
+        float framePaddingY = (lineHeight - iconSize) * 0.5f;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, framePaddingY));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.1f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.15f));
+        if (ImGui::ImageButton("##settings", (ImTextureID)getSettingsIcon()->getRendererID(),
+            ImVec2(iconSize, iconSize), { 0, 1 }, { 1, 0 }))
         {
             ImGui::OpenPopup("ComponentSettings");
         }
+        ImGui::PopStyleColor(3);
+        ImGui::PopStyleVar();
 
         bool removeComponent = false;
         if (ImGui::BeginPopup("ComponentSettings"))
@@ -212,10 +322,14 @@ static void drawComponent(const std::string& name, Entity entity, UIFunction uiF
 
         if (open)
         {
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 4.0f));
             uiFunction(component);
+            ImGui::PopStyleVar();
 
             ImGui::TreePop();
         }
+
+        ImGui::Dummy(ImVec2(0.0f, 4.0f));
 
         if (removeComponent)
         {
@@ -242,29 +356,47 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
     ImGui::SameLine();
     ImGui::PushItemWidth(-1);
 
-    if (ImGui::Button("Add Component"))
+    if (ImGui::Button("ADD"))
     {
         ImGui::OpenPopup("AddComponent");
     }
 
     if (ImGui::BeginPopup("AddComponent"))
     {
-        if (ImGui::MenuItem("Camera"))
+        if (!m_SelectionContext.hasComponent<CameraComponent>())
         {
-            if (!m_SelectionContext.hasComponent<CameraComponent>())
+            if (ImGui::MenuItem("Camera"))
+            {
 				m_SelectionContext.addComponent<CameraComponent>();
-			else
-				FH_CORE_WARN("This entity already has the Camera Component!");
-			ImGui::CloseCurrentPopup();
+                ImGui::CloseCurrentPopup();
+            }
         }
 
-        if (ImGui::MenuItem("Sprite Renderer"))
+        if (!m_SelectionContext.hasComponent<SpriteRendererComponent>())
         {
-            if (!m_SelectionContext.hasComponent<SpriteRendererComponent>())
-				m_SelectionContext.addComponent<SpriteRendererComponent>();
-			else
-				FH_CORE_WARN("This entity already has the Sprite Renderer Component!");
-			ImGui::CloseCurrentPopup();
+            if (ImGui::MenuItem("Sprite Renderer"))
+            {
+                m_SelectionContext.addComponent<SpriteRendererComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        if (!m_SelectionContext.hasComponent<RigidBody2DComponent>())
+        {
+            if (ImGui::MenuItem("Rigid Body"))
+            {
+                m_SelectionContext.addComponent<RigidBody2DComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        if (!m_SelectionContext.hasComponent<BoxCollider2DComponent>())
+        {
+            if (ImGui::MenuItem("Box Collider"))
+            {
+                m_SelectionContext.addComponent<BoxCollider2DComponent>();
+                ImGui::CloseCurrentPopup();
+            }
         }
 
         ImGui::EndPopup();
@@ -286,6 +418,7 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
         auto& camera = component.camera;
 
         ImGui::Checkbox("Primary", &component.primary);
+        drawFullWidthSeparator();
 
         const char* projectionTypeStrings[] = {"Prespective", "Orthographic"};
         const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.getProjectionType()];
@@ -309,6 +442,7 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
 
             ImGui::EndCombo();
         }
+        drawFullWidthSeparator();
 
         if (camera.getProjectionType() ==  SceneCamera::ProjectionType::Prespective)
         {
@@ -317,18 +451,21 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
             {
                 camera.setPrespectiveVerticalFOV(glm::radians(prespectiveFov));
             }
-                
+            drawFullWidthSeparator();
+
             float prespectiveNear = camera.getPrespectiveNearClip();
             if (ImGui::DragFloat("NearClip", &prespectiveNear))
             {
                 camera.setPrespectiveNearClip(prespectiveNear);
             }
+            drawFullWidthSeparator();
 
             float prespectiveFar = camera.getPrespectiveFarClip();
             if (ImGui::DragFloat("FarClip", &prespectiveFar))
             {
                 camera.setPrespectiveFarClip(prespectiveFar);
             }
+            drawFullWidthSeparator();
         }
 
         if (camera.getProjectionType() ==  SceneCamera::ProjectionType::Orthographic)
@@ -338,69 +475,66 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
             {
                 camera.setOrthographicSize(orthoSize);
             }
-                
+            drawFullWidthSeparator();
+
             float orthoNear = camera.getOrthographicNearClip();
             if (ImGui::DragFloat("NearClip", &orthoNear))
             {
                 camera.setOrthographicNearClip(orthoNear);
             }
+            drawFullWidthSeparator();
 
             float orthoFar = camera.getOrthographicFarClip();
             if (ImGui::DragFloat("FarClip", &orthoFar))
             {
                 camera.setOrthographicFarClip(orthoFar);
             }
+            drawFullWidthSeparator();
 
             ImGui::Checkbox("Fixed Aspect Ratio", &component.fixedAspectRatio);
+            drawFullWidthSeparator();
         }
     });
 
     drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
     {
-        //Color
-        ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
-        //Texture
-        ImGui::PushID("TextureField");
+        drawColorField("Color", component.color);
+        drawTextureField("Texture", component.texture, g_AssetPath);
+        drawFloatField("Tiling Factor", component.tilingFactor, 0.1f, 1.0f, 10.0f);
+    });
 
-    float thumbnailSize = 64.0f;
-
-    if (component.texture)
+    drawComponent<RigidBody2DComponent>("Rigid Body", entity, [](auto& component)
     {
-        ImGui::ImageButton("##texture", (ImTextureID)component.texture->getRendererID(),
-            { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
-    }
-    else
-    {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.35f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-        ImGui::Button("##texture_empty", { thumbnailSize, thumbnailSize });
-        ImGui::PopStyleColor(3);
-    }
-
-    if (ImGui::BeginDragDropTarget())
-    {
-        if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
+        const char* bodyTypeStrings[] = {"Static", "Dynamic", "Kinematic"};
+        const char* currentBodyTypeString = bodyTypeStrings[(int)component.type];
+        if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
         {
-            const char* path = (const char*)payLoad->Data;
-            std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-            component.texture = Texture2D::create(texturePath.string());
+            for (int i = 0; i < 2; i++)
+            {
+                bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+                if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+                {
+                    currentBodyTypeString = bodyTypeStrings[i];
+                    component.type = ((RigidBody2DComponent::BodyType)i);
+                }
+
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+
+            ImGui::EndCombo();
         }
-        ImGui::EndDragDropTarget();
-    }
 
-    if (ImGui::BeginPopupContextItem("##texture_context"))
+        ImGui::Checkbox("Fixed Rotation", &component.fixedRotation);
+    });
+
+    drawComponent<BoxCollider2DComponent>("Box Collider", entity, [](auto& component)
     {
-        if (ImGui::MenuItem("Clear"))
-            component.texture = nullptr;
-        ImGui::EndPopup();
-    }
-
-    ImGui::SameLine();
-    ImGui::Text("Texture");
-
-    ImGui::PopID();
-
-    ImGui::DragFloat("Tiling Factor", &component.tilingFactor, 0.1f, 1.0f, 10.0f);
+        ImGui::DragFloat2("Offset", glm::value_ptr(component.offset));
+        ImGui::DragFloat2("Size", glm::value_ptr(component.size));
+        drawFloatField("Density", component.density, 0.01f, 0.0f, 1.0f);
+        drawFloatField("Friction", component.friction, 0.01f, 0.0f, 1.0f);
+        drawFloatField("Restitution", component.restitution, 0.1f, 0.0f, 1.0f);
+        drawFloatField("RestitutionThreshold", component.restitutionThreshold, 0.01f, 1.0f, 10.0f);
     });
 }

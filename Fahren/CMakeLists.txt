@@ -73,6 +73,11 @@ set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
 set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(requisites/yaml-cpp)
 
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_TESTBED    OFF CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_DOCS       OFF CACHE BOOL "" FORCE)
+add_subdirectory(requisites/box2d)
+
 add_library(entt INTERFACE)
 target_include_directories(entt INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/entt/include
@@ -106,6 +111,7 @@ target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/stb_image
+    ${CMAKE_CURRENT_SOURCE_DIR}/requisites/box2d/include
 )
 
 target_precompile_headers(FahrenEngine PRIVATE src/fhpch.h)
@@ -123,6 +129,7 @@ target_link_libraries(FahrenEngine PUBLIC
     entt
     yaml-cpp::yaml-cpp
     Tracy::TracyClient
+    box2d
 )
 
 target_compile_definitions(FahrenEngine PUBLIC

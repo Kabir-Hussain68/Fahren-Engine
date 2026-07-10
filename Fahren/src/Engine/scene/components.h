@@ -80,3 +80,33 @@ struct NativeScriptComponent
         destroyScript = [](NativeScriptComponent* nsc) { delete nsc->instance; nsc->instance = nullptr; };
     }
 };
+
+struct RigidBody2DComponent
+{
+    enum class  BodyType { Static = 0, Dynamic, Kinematic };
+    BodyType type  = BodyType::Static;
+    bool fixedRotation = false;
+
+    //Storage for runtime
+    void* Runtime = nullptr;
+
+    RigidBody2DComponent() = default;
+    RigidBody2DComponent(const RigidBody2DComponent&) = default;
+};
+
+struct BoxCollider2DComponent
+{
+    glm::vec2 offset = {0.0f, 0.0f};
+    glm::vec2 size = {0.5f, 0.5f};
+
+    float density = 1.0f;
+    float friction = 0.5f;
+    float restitution = 0.0f;
+    float restitutionThreshold = 0.5f;
+
+    //Storage for runtime
+    void* RuntimeFixture = nullptr;
+
+    BoxCollider2DComponent() = default;
+    BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
+};
