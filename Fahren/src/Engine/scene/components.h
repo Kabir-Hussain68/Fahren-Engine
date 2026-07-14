@@ -110,3 +110,17 @@ struct BoxCollider2DComponent
     BoxCollider2DComponent() = default;
     BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 };
+
+struct AudioSourceComponent
+{
+    std::string audioPath;
+    float volume = 1.0f;
+    bool loop = false;
+    bool playOnStart = false;
+
+    //Storage for runtime
+    void* Runtime = nullptr;
+
+    AudioSourceComponent() = default;
+    AudioSourceComponent(const AudioSourceComponent&) = default;
+};

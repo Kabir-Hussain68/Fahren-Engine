@@ -2,15 +2,15 @@ Scene: Untitled
 Entities:
   - Entity: 12837192831273
     TagComponent:
-      Tag: DynamicBox
+      Tag: StaticBox
     TransformComponent:
-      Translation: [6.7253536e-06, 2.52617, 0]
-      Rotation: [0, 0, 1.5707968]
-      Scale: [0.9999654, 0.9999654, 1]
+      Translation: [0, -2.8, 0]
+      Rotation: [0, 0, 0]
+      Scale: [7.6188216, 1, 1]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 1]
+      Color: [1, 0.33997703, 0.023166, 1]
     RigidBody2DComponent:
-      BodyType: Dynamic
+      BodyType: Static
       FixedRotation: false
     BoxCollider2DComponent:
       Offset: [0, 0]
@@ -19,6 +19,11 @@ Entities:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
+    AudioSourceComponent:
+      AudioPath: assets/audio/stock-elegant-music.mp3
+      Volume: 0.5
+      Loop: false
+      PlayOnStart: true
   - Entity: 12837192831273
     TagComponent:
       Tag: Camera
@@ -39,15 +44,15 @@ Entities:
       FixedAspectRatio: false
   - Entity: 12837192831273
     TagComponent:
-      Tag: StaticBox
+      Tag: DynamicBox
     TransformComponent:
-      Translation: [0, -2.8, 0]
-      Rotation: [0, 0, 0]
-      Scale: [7.6188216, 1, 1]
+      Translation: [4.1663725e-06, 2.6871824, 0]
+      Rotation: [0, 0, 1.5707968]
+      Scale: [0.9999436, 0.9999436, 1]
     SpriteRendererComponent:
-      Color: [1, 0.33997703, 0.023166, 1]
+      Color: [1, 1, 1, 1]
     RigidBody2DComponent:
-      BodyType: Static
+      BodyType: Dynamic
       FixedRotation: false
     BoxCollider2DComponent:
       Offset: [0, 0]

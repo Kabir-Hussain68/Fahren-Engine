@@ -276,6 +276,47 @@ static void drawColorField(const std::string& label, glm::vec4& color, float col
     drawFullWidthSeparator();
 }
 
+static void drawAudioField(const std::string& label, std::string& audioPath, const std::filesystem::path& assetPath, float columnWidth = 100.0f)
+{
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2, nullptr, false);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text("%s", label.c_str());
+    ImGui::NextColumn();
+
+    std::string displayName = audioPath.empty() ? "None" : std::filesystem::path(audioPath).filename().string();
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.35f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::Button(displayName.c_str(), ImVec2(-1.0f, 0.0f));
+    ImGui::PopStyleColor(3);
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("Content_Browser_Item"))
+        {
+            const char* path = (const char*)payLoad->Data;
+            std::filesystem::path fullPath = assetPath / path;
+            audioPath = fullPath.string();
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    if (ImGui::BeginPopupContextItem("##audio_context"))
+    {
+        if (ImGui::MenuItem("Clear"))
+            audioPath.clear();
+        ImGui::EndPopup();
+    }
+
+    ImGui::Columns(1);
+    ImGui::PopID();
+
+    drawFullWidthSeparator();
+}
+
 template<typename T, typename UIFunction>
 static void drawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
 {
@@ -395,6 +436,15 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
             if (ImGui::MenuItem("Box Collider"))
             {
                 m_SelectionContext.addComponent<BoxCollider2DComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        if (!m_SelectionContext.hasComponent<AudioSourceComponent>())
+        {
+            if (ImGui::MenuItem("Audio Source"))
+            {
+                m_SelectionContext.addComponent<AudioSourceComponent>();
                 ImGui::CloseCurrentPopup();
             }
         }
@@ -536,5 +586,17 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
         drawFloatField("Friction", component.friction, 0.01f, 0.0f, 1.0f);
         drawFloatField("Restitution", component.restitution, 0.1f, 0.0f, 1.0f);
         drawFloatField("RestitutionThreshold", component.restitutionThreshold, 0.01f, 1.0f, 10.0f);
+    });
+
+    drawComponent<AudioSourceComponent>("Audio Source", entity, [](auto& component)
+    {
+        drawAudioField("Audio Clip", component.audioPath, g_AssetPath);
+        drawFloatField("Volume", component.volume, 0.01f, 0.0f, 1.0f);
+
+        ImGui::Checkbox("Loop", &component.loop);
+        drawFullWidthSeparator();
+
+        ImGui::Checkbox("Play On Start", &component.playOnStart);
+        drawFullWidthSeparator();
     });
 }

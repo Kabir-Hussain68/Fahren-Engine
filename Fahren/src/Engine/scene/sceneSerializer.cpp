@@ -229,6 +229,20 @@ static void serializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap; // BoxCollider2DComponent
 	}
 
+    if (entity.hasComponent<AudioSourceComponent>())
+	{
+		out << YAML::Key << "AudioSourceComponent";
+		out << YAML::BeginMap; // AudioSourceComponent
+
+		auto& audioSourceComponent = entity.getComponent<AudioSourceComponent>();
+		out << YAML::Key << "AudioPath" << YAML::Value << audioSourceComponent.audioPath;
+		out << YAML::Key << "Volume" << YAML::Value << audioSourceComponent.volume;
+        out << YAML::Key << "Loop" << YAML::Value << audioSourceComponent.loop;
+		out << YAML::Key << "PlayOnStart" << YAML::Value << audioSourceComponent.playOnStart;
+
+		out << YAML::EndMap; // AudioSourceComponent
+	}
+
     out << YAML::EndMap; //Entity
 }
 
@@ -344,6 +358,16 @@ bool SceneSerializer::deserialize(const std::string &filepath)
                 bc2d.restitution = boxCollider2DComponent["Restitution"].as<float>();
                 bc2d.restitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
 			}
+
+            auto audioSourceComponent = entity["AudioSourceComponent"];
+            if (audioSourceComponent)
+            {
+                auto& audio = deserializedEntity.addComponent<AudioSourceComponent>();
+                audio.audioPath = audioSourceComponent["AudioPath"].as<std::string>();
+                audio.volume = audioSourceComponent["Volume"].as<float>();
+                audio.loop = audioSourceComponent["Loop"].as<bool>();
+                audio.playOnStart = audioSourceComponent["PlayOnStart"].as<bool>();
+            }
 		}
 	}
 

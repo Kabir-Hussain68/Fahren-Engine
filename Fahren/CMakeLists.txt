@@ -88,6 +88,8 @@ file(GLOB_RECURSE FAHREN_SOURCES
     "src/*.h"
     "requisites/stb_image/*.cpp"
     "requisites/stb_image/*.h"
+    "requisites/miniaudio/*.h"
+    "requisites/miniaudio/*.cpp"
 )
 
 list(REMOVE_ITEM FAHREN_SOURCES
@@ -111,6 +113,7 @@ target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/stb_image
+    ${CMAKE_CURRENT_SOURCE_DIR}/requisites/miniaudio
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/box2d/include
 )
 
