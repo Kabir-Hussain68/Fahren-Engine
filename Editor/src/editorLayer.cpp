@@ -14,7 +14,7 @@
 extern const std::filesystem::path g_AssetPath;
 
 EditorLayer::EditorLayer()
-    : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
+    : Layer("EditorLayer")
 {
 }
 
@@ -43,53 +43,6 @@ void EditorLayer::onAttach()
 
     m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
-#if 0
-
-    auto redSquare = m_ActiveScene->createEntity("Red Square");
-    redSquare.addComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-
-    auto greenSquare = m_ActiveScene->createEntity("Green Square");
-    greenSquare.addComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
-    m_SquareEntity = redSquare;
-
-    m_CameraEntity = m_ActiveScene->createEntity("Camera A");
-    m_CameraEntity.addComponent<CameraComponent>();
-
-    m_SeconcCamera = m_ActiveScene->createEntity("Camera B");
-    auto& cc = m_SeconcCamera.addComponent<CameraComponent>();
-    cc.primary = false;
-
-    class Test : public ScriptableEntity
-    {
-    public:
-        void onCreate()
-        {
-        }
-
-        void onDestroy()
-        {
-
-        }
-
-        void onUpdate(Timestep ts)
-        {
-            auto& translation = getComponent<TransformComponent>().translation;
-
-            if (Input::isKeyPressed(KeyCode::A))
-                translation.x -= 1.0f * ts;
-            if (Input::isKeyPressed(KeyCode::D))
-                translation.x += 1.0f * ts;
-            if (Input::isKeyPressed(KeyCode::W))
-                translation.y += 1.0f * ts;
-            if (Input::isKeyPressed(KeyCode::S))
-                translation.y -= 1.0f * ts;
-        }
-    };
-
-    m_CameraEntity.addComponent<NativeScriptComponent>().bind<Test>();
-#endif
-
     m_SceneHierarchyPanel.setContext(m_ActiveScene);
 }
 
@@ -107,7 +60,6 @@ void EditorLayer::onUpdate(Timestep ts)
             (spec.width != m_ViewportSize.x || spec.height != m_ViewportSize.y))
     {
         m_FrameBuffer->resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        m_CameraController.onResize(m_ViewportSize.x, m_ViewportSize.y);
         m_EditorCamera.setViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 
         m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -130,7 +82,6 @@ void EditorLayer::onUpdate(Timestep ts)
             {
                 if (m_ViewportFocused)
                 {
-                    m_CameraController.onUpdate(ts);
                     m_EditorCamera.onUpdate(ts);
                 }
 
@@ -393,7 +344,6 @@ void EditorLayer::UI_Toolbar()
 
 void EditorLayer::onEvent(Event &event)
 {
-    m_CameraController.onEvent(event);
     m_EditorCamera.onEvent(event);
 
     EventDispatcher dispatcher(event);
@@ -404,13 +354,45 @@ void EditorLayer::onEvent(Event &event)
 void EditorLayer::onScenePlay()
 {
     m_SceneState = SceneState::Play;
+    
+    m_ActiveScene= Scene::copy(m_Editorscene);
     m_ActiveScene->onRuntimeStart();
+
+    m_SceneHierarchyPanel.setContext(m_ActiveScene);
 }
 
 void EditorLayer::onSceneStop()
 {
     m_SceneState = SceneState::Edit;
     m_ActiveScene->onRuntimeStop();
+    m_ActiveScene = m_Editorscene;
+
+    m_SceneHierarchyPanel.setContext(m_ActiveScene);    
+}
+
+void EditorLayer::onDeleteEntity()
+{
+    if (m_SceneState != SceneState::Edit)
+        return;
+
+    Entity selectedEntity = m_SceneHierarchyPanel.getSelectedEntity();
+    if (selectedEntity)
+    {
+        m_Editorscene->destroyEntity(selectedEntity);
+        m_SceneHierarchyPanel.setSelectedEntity({});
+    }
+}
+
+void EditorLayer::onDuplicateEntity()
+{
+    if (m_SceneState != SceneState::Edit)
+        return;
+
+    Entity selectedEntity = m_SceneHierarchyPanel.getSelectedEntity();
+    if (selectedEntity)
+    {
+        m_Editorscene->duplicateEntity(selectedEntity);
+    }
 }
 
 bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
@@ -422,7 +404,7 @@ bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
     bool shiftPressed = Input::isKeyPressed(Key::LeftShift) || Input::isKeyPressed(Key::RightShift);
     switch (event.getKeyCode())
     {
-        //File Dialogs
+        // File Dialogs
         case Key::N:
         {   
             if (controlPressed)
@@ -439,12 +421,31 @@ bool EditorLayer::onKeyPressed(KeyPressedEvent &event)
 
         case Key::S:
         {   
-            if (controlPressed && shiftPressed)
-                saveSceneAs();
+            if (controlPressed)
+            {
+                if (shiftPressed)
+                    saveSceneAs();
+                else
+                    saveScene();
+            }
             break;
         }
 
-        //Gizmos
+        // Commands
+        case Key::D:
+        {   
+            if (controlPressed)
+                onDuplicateEntity();
+            break;
+        }
+
+        case Key::Delete:
+        {   
+            onDeleteEntity();
+            break;
+        }
+
+        // Gizmos
         case Key::Q:
         {
             if (!ImGuizmo::IsUsing())
@@ -489,16 +490,34 @@ void EditorLayer::newScene()
     m_ActiveScene = createRef<Scene>();
     m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
     m_SceneHierarchyPanel.setContext(m_ActiveScene);
+    m_EditorScenePath = std::filesystem::path();
+}
+
+void EditorLayer::saveScene()
+{
+    if (!m_EditorScenePath.empty())
+        serializeScene(m_ActiveScene, m_EditorScenePath);
+    else 
+        saveSceneAs();
 }
 
 void EditorLayer::openScene(const std::filesystem::path& path)
 {
-    m_ActiveScene = createRef<Scene>();
-    m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-    m_SceneHierarchyPanel.setContext(m_ActiveScene);
+    if (m_SceneState != SceneState::Edit)
+        onSceneStop();
 
-    SceneSerializer serializer(m_ActiveScene);
-    serializer.deserialize(path.string());   
+    Ref<Scene> newScene = createRef<Scene>();
+    SceneSerializer serializer(newScene);
+    if (serializer.deserialize(path.string()))
+    {
+        m_Editorscene = newScene;
+        m_Editorscene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.setContext(m_Editorscene);
+
+        m_ActiveScene = m_Editorscene;
+        m_EditorScenePath = path;
+    }
+   
 }
 
 void EditorLayer::openScene()
@@ -510,14 +529,20 @@ void EditorLayer::openScene()
     }
 }
 
+void EditorLayer::serializeScene(Ref<Scene> scene, const std::filesystem::path &path)
+{
+    SceneSerializer serializer(scene);
+    serializer.serialize(path);
+}
 
 void EditorLayer::saveSceneAs()
 {
     std::string filePath = FileDialogs::saveFile("Fahren Scene (*.fahren)\0*.fahren\0");
     if (!filePath.empty())
     {
-        SceneSerializer serializer(m_ActiveScene);
-        serializer.serialize(filePath);
+        serializeScene(m_ActiveScene, filePath);
+
+        m_EditorScenePath = filePath;
     }
 }
 

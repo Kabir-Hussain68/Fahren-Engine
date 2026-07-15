@@ -76,7 +76,7 @@ void ImGuiLayer::onEvent(Event &e)
     {
         ImGuiIO& io = ImGui::GetIO();
 	    e.Handled |= e.isInCategory(eventCategoryMouse) & io.WantCaptureMouse;
-	    e.Handled |= e.isInCategory(eventCategoryKeyboard) & io.WantCaptureKeyboard;
+	    e.Handled |= e.isInCategory(eventCategoryKeyboard) & io.WantTextInput;
     }
 }
 

@@ -14,18 +14,11 @@ private:
 
     SceneState m_SceneState = SceneState::Edit;
 
-    OrthographicCameraController m_CameraController;
-
-    Ref<Shader> m_FlatColorShader;
-    Ref<VertexArray> m_SquareVA;
     Ref<FrameBuffer> m_FrameBuffer;
 
-    Ref<Texture2D> m_FaceTexture;
-
     Ref<Scene> m_ActiveScene;
-    Entity m_SquareEntity;
-    Entity m_CameraEntity;
-    Entity m_SeconcCamera;
+    Ref<Scene> m_Editorscene;
+    std::filesystem::path m_EditorScenePath;
 
     //EntityID
     Entity m_HoveredEntity;
@@ -54,9 +47,18 @@ private:
     bool onMouseButtonPressed(MouseButtonPressedEvent& event);
 
     void newScene();
+    void saveScene();
     void saveSceneAs();
     void openScene(const std::filesystem::path& path);
     void openScene();
+
+    void serializeScene(Ref<Scene> scene, const std::filesystem::path& path);
+
+    void onScenePlay();
+    void onSceneStop();
+
+    void onDeleteEntity();
+    void onDuplicateEntity();
 
 public:
     EditorLayer();
@@ -68,9 +70,6 @@ public:
     void onUpdate(Timestep ts) override;
     virtual void onImGuiRender() override;
     void onEvent(Event& event) override;
-
-    void onScenePlay();
-    void onSceneStop();
 
     // UI Panels
     void UI_Toolbar();

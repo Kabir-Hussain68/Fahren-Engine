@@ -39,37 +39,39 @@ void SceneHierarchyPanel::onImGuiRender()
 {
     ImGui::Begin("Scene Hierarchy");
 
-    m_Context->m_Registry.view<entt::entity>().each([this](auto entityID)
-    {
-        Entity entity{ entityID, m_Context.get() };
-        drawEntityNode(entity);
-    });
-
-    if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-    {
-        m_SelectionContext = {};
-    }
-
-    if (ImGui::BeginPopupContextWindow("WindowContextMenu", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
-    {
-        if (ImGui::MenuItem("Empty Entity"))
+    if (m_Context)
+    {   
+        m_Context->m_Registry.view<entt::entity>().each([this](auto entityID)
         {
-            m_Context->createEntity("Empty Entity");
-            ImGui::CloseCurrentPopup();
+            Entity entity{ entityID, m_Context.get() };
+            drawEntityNode(entity);
+        });
+        
+        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+        {
+            m_SelectionContext = {};
         }
-
-        ImGui::EndPopup();
-    }
-
-    ImGui::End();
-
-    ImGui::Begin("Properties Panel");
-    if (m_SelectionContext)
-    {
-        drawComponents(m_SelectionContext);
-    }
-
-    ImGui::End();
+        
+        if (ImGui::BeginPopupContextWindow("WindowContextMenu", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+        {
+            if (ImGui::MenuItem("Empty Entity"))
+            {
+                m_Context->createEntity("Empty Entity");
+                ImGui::CloseCurrentPopup();
+            }
+            
+            ImGui::EndPopup();
+        }
+    }   
+        ImGui::End();
+        
+        ImGui::Begin("Properties Panel");
+        if (m_SelectionContext)
+        {
+            drawComponents(m_SelectionContext);
+        }
+        
+        ImGui::End();
 }
 
 void SceneHierarchyPanel::setSelectedEntity(Entity entity)

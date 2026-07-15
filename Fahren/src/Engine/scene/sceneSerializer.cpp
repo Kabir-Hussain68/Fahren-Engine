@@ -137,9 +137,11 @@ SceneSerializer::SceneSerializer(const Ref<Scene> &scene)
 
 static void serializeEntity(YAML::Emitter& out, Entity entity)
 {
+    FH_CORE_ASSERT(entity.hasComponent<IDComponent>());
+
     out << YAML::BeginMap; //Entity
     out << YAML::Key << "Entity";
-    out << YAML::Value << "12837192831273"; //TODO : Entity ID 
+    out << YAML::Value << entity.getUUID();
 
     if (entity.hasComponent<TagComponent>())
     {
@@ -290,7 +292,7 @@ bool SceneSerializer::deserialize(const std::string &filepath)
     {
         for (auto entity : entities)
         {
-            uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+            uint64_t uuid = entity["Entity"].as<uint64_t>();
 
 			std::string name;
 			auto tagComponent = entity["TagComponent"];
@@ -299,7 +301,7 @@ bool SceneSerializer::deserialize(const std::string &filepath)
 
 			FH_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-			Entity deserializedEntity = m_Scene->createEntity(name);
+			Entity deserializedEntity = m_Scene->createEntityWithUUID(uuid, name);
 
 			auto transformComponent = entity["TransformComponent"];
 			if (transformComponent)

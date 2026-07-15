@@ -7,10 +7,20 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "sceneCamera.h"
-#include "scriptableEntity.h"
 #include "Engine/renderer/texture.h"
+#include "Engine/core/UUID.h"
 
 // Components which the entities can be assigned
+
+struct IDComponent
+{
+    UUID id;
+
+    IDComponent() = default;
+    IDComponent(const IDComponent&) = default;
+    IDComponent(const UUID& uuid)
+        : id(uuid)  {}
+};
 
 struct TagComponent
 {
@@ -66,6 +76,7 @@ struct CameraComponent
     CameraComponent(const CameraComponent&) = default;
 };
 
+class ScriptableEntity;
 struct NativeScriptComponent
 {
     ScriptableEntity* instance = nullptr;

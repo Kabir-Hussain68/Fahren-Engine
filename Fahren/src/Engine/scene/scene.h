@@ -3,7 +3,7 @@
 #include "entt.hpp"
 
 #include "Engine/core/timestep.h"
-
+#include "Engine/core/UUID.h"
 #include "Engine/renderer/editorCamera.h"
 
 class b2World;
@@ -34,8 +34,13 @@ public:
     Scene();
     ~Scene();
 
+    static Ref<Scene> copy(Ref<Scene> src);
+
     Entity createEntity(const std::string& name = std::string());
+    Entity createEntityWithUUID(UUID uuid, const std::string& name = std::string());
     void destroyEntity(Entity entity);
+
+    void duplicateEntity(Entity entity);
 
     void onRuntimeStart();
     void onRuntimeStop();

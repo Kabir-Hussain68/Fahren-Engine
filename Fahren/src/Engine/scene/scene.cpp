@@ -2,6 +2,7 @@
 #include "scene.h"
 
 #include "components.h"
+#include "scriptableEntity.h"
 #include "Engine/renderer/renderer2D.h"
 
 #include <glm/glm.hpp>
@@ -38,9 +39,70 @@ Scene::~Scene()
 {
 }
 
+template<typename Component>
+static void copyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+{
+    auto view = src.view<Component>();
+    for (auto e : view)
+    {
+        UUID uuid = src.get<IDComponent>(e).id;
+        FH_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+        entt::entity dstEnttID = enttMap.at(uuid);
+
+        auto& component = src.get<Component>(e);
+        dst.emplace_or_replace<Component>(dstEnttID, component);
+    }
+}
+
+template<typename Component>
+static void copyComponentIfExists(Entity dst, Entity src)
+{
+    if (src.hasComponent<Component>())
+    {
+        dst.addOrReplaceComponent<Component>(src.getComponent<Component>());
+    }
+}
+
+Ref<Scene> Scene::copy(Ref<Scene> src)
+{
+    Ref<Scene> newScene = createRef<Scene>();
+
+    newScene->m_ViewportWidth = src->m_ViewportWidth;
+    newScene->m_ViewportWidth = src->m_ViewportHeight;
+    
+    auto& srcSceneRegistry = src->m_Registry;
+    auto& dstSceneRegistry = newScene->m_Registry;
+    std::unordered_map<UUID, entt::entity> enttMap;
+
+    auto idView = srcSceneRegistry.view<IDComponent>();
+    for (auto e : idView)
+    {
+        UUID uuid = srcSceneRegistry.get<IDComponent>(e).id;
+        const auto& name = srcSceneRegistry.get<TagComponent>(e).tag;
+        Entity newEntity = newScene->createEntityWithUUID(uuid, name);
+        enttMap[uuid] = (entt::entity)newEntity;
+    }
+
+    copyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+    copyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+    copyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+    copyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+    copyComponent<RigidBody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+    copyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+    copyComponent<AudioSourceComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+
+    return newScene;
+}
+
 Entity Scene::createEntity(const std::string& name)
 {
+    return createEntityWithUUID(UUID(), name);
+}
+
+Entity Scene::createEntityWithUUID(UUID uuid, const std::string &name)
+{
     Entity entity = { m_Registry.create(), this };
+    entity.addComponent<IDComponent>(uuid);
     entity.addComponent<TransformComponent>();
     auto& tag = entity.addComponent<TagComponent>();
     tag.tag = name.empty() ? "Entity" : name;
@@ -50,6 +112,19 @@ Entity Scene::createEntity(const std::string& name)
 void Scene::destroyEntity(Entity entity)
 {
     m_Registry.destroy(entity);
+}
+
+void Scene::duplicateEntity(Entity entity)
+{
+    Entity newEntity = createEntity(entity.getName());
+
+    copyComponentIfExists<TransformComponent>(newEntity, entity);
+    copyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+    copyComponentIfExists<CameraComponent>(newEntity, entity);
+    copyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+    copyComponentIfExists<RigidBody2DComponent>(newEntity, entity);
+    copyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+    copyComponentIfExists<AudioSourceComponent>(newEntity, entity);
 }
 
 void Scene::onRuntimeStart()
@@ -295,6 +370,11 @@ void Scene::onComponentAdded(Entity entity, T& component)
 {
     static_assert(false);
 
+}
+
+template<>
+void Scene::onComponentAdded<IDComponent>(Entity entity, IDComponent& component)
+{
 }
 
 template<>
