@@ -35,9 +35,21 @@ public:
     }
 
     // Drawing the objects on the screen by the VAO
-    inline static void drawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0)
+    inline static void drawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0)
     {
-        s_RendererAPI->drawIndexed(vertexArray, count);
+        s_RendererAPI->drawIndexed(vertexArray, indexCount);
+    }
+
+    // Drawing the lines on the screen by the VAO
+    inline static void drawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+    {
+        s_RendererAPI->drawLines(vertexArray, vertexCount);
+    }
+
+    // Drawing the lines on the screen by the VAO
+    inline static void setLineThickness(float thickness)
+    {
+        s_RendererAPI->setLineThickness(thickness);
     }
 
 };

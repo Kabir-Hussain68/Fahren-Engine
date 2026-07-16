@@ -203,6 +203,19 @@ static void serializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap; // SpriteRendererComponent
 	}
 
+    if (entity.hasComponent<CircleRendererComponent>())
+	{
+		out << YAML::Key << "CircleRendererComponent";
+		out << YAML::BeginMap; // CircleRendererComponent
+
+		auto& circleRendererComponent = entity.getComponent<CircleRendererComponent>();
+		out << YAML::Key << "Color" << YAML::Value << circleRendererComponent.color;
+		out << YAML::Key << "Thickness" << YAML::Value << circleRendererComponent.thickness;
+		out << YAML::Key << "Fade" << YAML::Value << circleRendererComponent.fade;
+
+		out << YAML::EndMap; // SpriteRendererComponent
+	}
+
     if (entity.hasComponent<RigidBody2DComponent>())
 	{
 		out << YAML::Key << "RigidBody2DComponent";
@@ -229,6 +242,22 @@ static void serializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::Key << "RestitutionThreshold" << YAML::Value << boxCollider2DComponent.restitutionThreshold;
 
 		out << YAML::EndMap; // BoxCollider2DComponent
+	}
+
+    if (entity.hasComponent<CircleCollider2DComponent>())
+	{
+		out << YAML::Key << "CircleCollider2DComponent";
+		out << YAML::BeginMap; // CircleCollider2DComponent
+
+		auto& circleCollider2DComponent = entity.getComponent<CircleCollider2DComponent>();
+		out << YAML::Key << "Offset" << YAML::Value << circleCollider2DComponent.offset;
+		out << YAML::Key << "Radius" << YAML::Value << circleCollider2DComponent.radius;
+        out << YAML::Key << "Density" << YAML::Value << circleCollider2DComponent.density;
+		out << YAML::Key << "Friction" << YAML::Value << circleCollider2DComponent.friction;
+		out << YAML::Key << "Restitution" << YAML::Value << circleCollider2DComponent.restitution;
+		out << YAML::Key << "RestitutionThreshold" << YAML::Value << circleCollider2DComponent.restitutionThreshold;
+
+		out << YAML::EndMap; // CircleCollider2DComponent
 	}
 
     if (entity.hasComponent<AudioSourceComponent>())
@@ -340,6 +369,15 @@ bool SceneSerializer::deserialize(const std::string &filepath)
 				src.color = spriteRendererComponent["Color"].as<glm::vec4>();
 			}
 
+            auto circleRendererComponent = entity["CircleRendererComponent"];
+			if (circleRendererComponent)
+			{
+				auto& src = deserializedEntity.addComponent<CircleRendererComponent>();
+				src.color = circleRendererComponent["Color"].as<glm::vec4>();
+				src.thickness = circleRendererComponent["Thickness"].as<float>();
+				src.fade = circleRendererComponent["Fade"].as<float>();
+			}
+
             auto rigidBody2DComponent = entity["RigidBody2DComponent"];
 			if (rigidBody2DComponent)
 			{
@@ -359,6 +397,18 @@ bool SceneSerializer::deserialize(const std::string &filepath)
                 bc2d.friction = boxCollider2DComponent["Friction"].as<float>();
                 bc2d.restitution = boxCollider2DComponent["Restitution"].as<float>();
                 bc2d.restitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
+			}
+
+            auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
+			if (circleCollider2DComponent)
+			{
+				auto& cc2d = deserializedEntity.addComponent<CircleCollider2DComponent>();
+                cc2d.offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
+                cc2d.radius = circleCollider2DComponent["Radius"].as<float>();
+                cc2d.density = circleCollider2DComponent["Density"].as<float>();
+                cc2d.friction = circleCollider2DComponent["Friction"].as<float>();
+                cc2d.restitution = circleCollider2DComponent["Restitution"].as<float>();
+                cc2d.restitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
 			}
 
             auto audioSourceComponent = entity["AudioSourceComponent"];

@@ -66,6 +66,19 @@ struct SpriteRendererComponent
 
 };
 
+struct CircleRendererComponent
+{
+    glm::vec4 color = glm::vec4(1.0f);
+    float thickness = 1.0f;
+    float fade = 0.05f;
+
+    CircleRendererComponent() = default;
+    CircleRendererComponent(const CircleRendererComponent&) = default;
+    CircleRendererComponent(const glm::vec4 color)
+        : color(color) {}
+
+};
+
 struct CameraComponent
 {
     SceneCamera camera;
@@ -120,6 +133,23 @@ struct BoxCollider2DComponent
 
     BoxCollider2DComponent() = default;
     BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
+};
+
+struct CircleCollider2DComponent
+{
+    glm::vec2 offset = {0.0f, 0.0f};
+    float radius = 1.0f;
+
+    float density = 1.0f;
+    float friction = 0.5f;
+    float restitution = 0.0f;
+    float restitutionThreshold = 0.5f;
+
+    //Storage for runtime
+    void* RuntimeFixture = nullptr;
+
+    CircleCollider2DComponent() = default;
+    CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
 };
 
 struct AudioSourceComponent

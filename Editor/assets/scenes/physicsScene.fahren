@@ -1,10 +1,79 @@
 Scene: Untitled
 Entities:
+  - Entity: 6901859163022552979
+    TagComponent:
+      Tag: Ball
+    TransformComponent:
+      Translation: [0.66229767, -0.8181299, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CircleRendererComponent:
+      Color: [0.95752907, 0, 1, 1]
+      Thickness: 1
+      Fade: 0.001
+    RigidBody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    CircleCollider2DComponent:
+      Offset: [0, 0]
+      Radius: 0.5
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  - Entity: 16596472459537494937
+    TagComponent:
+      Tag: Slope
+    TransformComponent:
+      Translation: [2.013108, -0.92847914, 0]
+      Rotation: [0, 0, 0.54105204]
+      Scale: [6.3, 0.100000024, 1]
+    SpriteRendererComponent:
+      Color: [0, 0.20077229, 1, 1]
+    RigidBody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+    AudioSourceComponent:
+      AudioPath: assets/audio/stock-elegant-music.mp3
+      Volume: 0.5
+      Loop: false
+      PlayOnStart: true
+  - Entity: 14507386145516528382
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Translation: [0, -2.62, 0]
+      Rotation: [0, 0, 0]
+      Scale: [9.5, 0.1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0.41698837, 0, 1]
+    RigidBody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+    AudioSourceComponent:
+      AudioPath: assets/audio/stock-elegant-music.mp3
+      Volume: 0.5
+      Loop: false
+      PlayOnStart: true
   - Entity: 12336886550838321434
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0, 0, 6.4]
+      Translation: [-1.1920929e-07, 1.1920929e-07, 6.4]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
@@ -37,15 +106,15 @@ Entities:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-  - Entity: 452305994391415858
+  - Entity: 2751195029362584728
     TagComponent:
-      Tag: Floor
+      Tag: LeftWall
     TransformComponent:
-      Translation: [0, -2.62, 0]
-      Rotation: [0, 0, 0]
-      Scale: [9.5, 0.1, 1]
+      Translation: [-4.703257, 0.5, 0]
+      Rotation: [0, 0, -1.5673057]
+      Scale: [6.3, 0.100000024, 1]
     SpriteRendererComponent:
-      Color: [1, 0.41698837, 0, 1]
+      Color: [0.35521245, 1, 0, 1]
     RigidBody2DComponent:
       BodyType: Static
       FixedRotation: false
@@ -56,8 +125,14 @@ Entities:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-    AudioSourceComponent:
-      AudioPath: assets/audio/stock-elegant-music.mp3
-      Volume: 0.5
-      Loop: false
-      PlayOnStart: true
+  - Entity: 13053021138357026842
+    TagComponent:
+      Tag: Circle
+    TransformComponent:
+      Translation: [1.1920929e-07, -2.9802322e-08, 0]
+      Rotation: [0, 0, 0]
+      Scale: [3.5, 3.5, 1]
+    CircleRendererComponent:
+      Color: [1, 0, 0, 1]
+      Thickness: 0.02
+      Fade: 0.001

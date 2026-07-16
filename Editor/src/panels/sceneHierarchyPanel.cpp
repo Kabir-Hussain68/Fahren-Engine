@@ -424,6 +424,15 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
             }
         }
 
+        if (!m_SelectionContext.hasComponent<CircleRendererComponent>())
+        {
+            if (ImGui::MenuItem("Circle Renderer"))
+            {
+                m_SelectionContext.addComponent<CircleRendererComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
         if (!m_SelectionContext.hasComponent<RigidBody2DComponent>())
         {
             if (ImGui::MenuItem("Rigid Body"))
@@ -435,9 +444,18 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
 
         if (!m_SelectionContext.hasComponent<BoxCollider2DComponent>())
         {
-            if (ImGui::MenuItem("Box Collider"))
+            if (ImGui::MenuItem("Box Collider 2D"))
             {
                 m_SelectionContext.addComponent<BoxCollider2DComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        if (!m_SelectionContext.hasComponent<CircleCollider2DComponent>())
+        {
+            if (ImGui::MenuItem("Circle Collider 2D"))
+            {
+                m_SelectionContext.addComponent<CircleCollider2DComponent>();
                 ImGui::CloseCurrentPopup();
             }
         }
@@ -555,6 +573,13 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
         drawFloatField("Tiling Factor", component.tilingFactor, 0.1f, 1.0f, 10.0f);
     });
 
+    drawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
+    {
+        drawColorField("Color", component.color);
+        drawFloatField("Thickness", component.thickness, 0.025f, 0.0f, 1.0f);
+        drawFloatField("Fade", component.fade, 0.00025f, 0.0f, 1.0f);
+    });
+
     drawComponent<RigidBody2DComponent>("Rigid Body", entity, [](auto& component)
     {
         const char* bodyTypeStrings[] = {"Static", "Dynamic", "Kinematic"};
@@ -580,10 +605,20 @@ void SceneHierarchyPanel::drawComponents(Entity entity)
         ImGui::Checkbox("Fixed Rotation", &component.fixedRotation);
     });
 
-    drawComponent<BoxCollider2DComponent>("Box Collider", entity, [](auto& component)
+    drawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component)
     {
         ImGui::DragFloat2("Offset", glm::value_ptr(component.offset));
         ImGui::DragFloat2("Size", glm::value_ptr(component.size));
+        drawFloatField("Density", component.density, 0.01f, 0.0f, 1.0f);
+        drawFloatField("Friction", component.friction, 0.01f, 0.0f, 1.0f);
+        drawFloatField("Restitution", component.restitution, 0.1f, 0.0f, 1.0f);
+        drawFloatField("RestitutionThreshold", component.restitutionThreshold, 0.01f, 1.0f, 10.0f);
+    });
+
+    drawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component)
+    {
+        ImGui::DragFloat2("Offset", glm::value_ptr(component.offset));
+        drawFloatField("Radius", component.radius, 0.1f, 0.0f, 10.0f);
         drawFloatField("Density", component.density, 0.01f, 0.0f, 1.0f);
         drawFloatField("Friction", component.friction, 0.01f, 0.0f, 1.0f);
         drawFloatField("Restitution", component.restitution, 0.1f, 0.0f, 1.0f);
