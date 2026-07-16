@@ -50,4 +50,10 @@ public:
     void onViewportResize(uint32_t width, uint32_t height);
 
     Entity getPrimaryCameraEntity();
+
+    template<typename... Components>
+    auto getAllEntitiesWith()
+    {
+        return m_Registry.view<Components...>();
+    }
 };

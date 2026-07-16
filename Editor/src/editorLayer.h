@@ -39,12 +39,16 @@ private:
     Ref<Texture2D> m_IconPlay;
     Ref<Texture2D> m_IconStop;
 
+    bool m_ShowPhysicsCollider = false;
+
     //Panels
     SceneHierarchyPanel m_SceneHierarchyPanel;
     ContentBrowserPanel m_ContentBrowserPanel;
 
     bool onKeyPressed(KeyPressedEvent& event);
     bool onMouseButtonPressed(MouseButtonPressedEvent& event);
+
+    void onOverlayRender();
 
     void newScene();
     void saveScene();

@@ -40,11 +40,6 @@ Entities:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-    AudioSourceComponent:
-      AudioPath: assets/audio/stock-elegant-music.mp3
-      Volume: 0.5
-      Loop: false
-      PlayOnStart: true
   - Entity: 14507386145516528382
     TagComponent:
       Tag: Floor
@@ -68,7 +63,7 @@ Entities:
       AudioPath: assets/audio/stock-elegant-music.mp3
       Volume: 0.5
       Loop: false
-      PlayOnStart: true
+      PlayOnStart: false
   - Entity: 12336886550838321434
     TagComponent:
       Tag: Camera
