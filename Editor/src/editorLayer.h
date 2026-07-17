@@ -9,7 +9,7 @@ class EditorLayer : public Layer
 private:
     enum class SceneState
     {
-        Edit = 0, Play = 1
+        Edit = 0, Play = 1, Simulate = 2
     };
 
     SceneState m_SceneState = SceneState::Edit;
@@ -37,6 +37,7 @@ private:
 
     //UI
     Ref<Texture2D> m_IconPlay;
+    Ref<Texture2D> m_IconSimulate;
     Ref<Texture2D> m_IconStop;
 
     bool m_ShowPhysicsCollider = false;
@@ -59,6 +60,7 @@ private:
     void serializeScene(Ref<Scene> scene, const std::filesystem::path& path);
 
     void onScenePlay();
+    void onSceneSimulate();
     void onSceneStop();
 
     void onDeleteEntity();

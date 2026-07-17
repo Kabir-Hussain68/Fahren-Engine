@@ -30,6 +30,10 @@ private:
     template<typename T>
     void onComponentAdded(Entity entity, T& component);
 
+    void onPhysicsStart();
+    void onPhysicsStop();
+
+    void onRenderScene(EditorCamera& camera);
 public:
     Scene();
     ~Scene();
@@ -45,8 +49,13 @@ public:
     void onRuntimeStart();
     void onRuntimeStop();
 
+    void onSimulationStart();
+    void onSimulationStop();
+
     void onUpdateEditor(Timestep ts, EditorCamera& camera);
     void onUpdateRuntime(Timestep ts);
+    void onUpdateSimulation(Timestep ts, EditorCamera& camera);
+
     void onViewportResize(uint32_t width, uint32_t height);
 
     Entity getPrimaryCameraEntity();

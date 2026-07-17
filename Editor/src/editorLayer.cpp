@@ -23,6 +23,7 @@ void EditorLayer::onAttach()
     FH_PROFILE_FUNCTION();
 
     m_IconPlay = Texture2D::create("resources/icons/play/play.png");
+    m_IconSimulate = Texture2D::create("resources/icons/play/simulate.png");
     m_IconStop = Texture2D::create("resources/icons/play/stop.png");
 
     FrameBufferSpecification fbSpec;
@@ -86,6 +87,13 @@ void EditorLayer::onUpdate(Timestep ts)
                 }
 
                 m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
+                break;
+            }
+            case SceneState::Simulate:
+            {
+                m_EditorCamera.onUpdate(ts);
+
+                m_ActiveScene->onUpdateSimulation(ts, m_EditorCamera);
                 break;
             }
             case SceneState::Play:
@@ -333,14 +341,31 @@ void EditorLayer::UI_Toolbar()
     ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     float size = ImGui::GetWindowHeight() - 4.0f;
-    Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
-    ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-    if (ImGui::ImageButton("##toolbarbutton", (ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0)))
+
+    // Play Button
     {
-        if (m_SceneState == SceneState::Edit)
-            onScenePlay();
-        else if (m_SceneState == SceneState::Play)
-            onSceneStop();
+        Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+        if (ImGui::ImageButton("##toolbarPlaybutton", (ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0)))
+        {
+            if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
+                onScenePlay();
+            else if (m_SceneState == SceneState::Play)
+                onSceneStop();
+        }
+    }
+    ImGui::SameLine();
+
+    // Simulate Button
+    {
+        Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
+        if (ImGui::ImageButton("##toolbarSimulatebutton", (ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0)))
+        {
+            if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+                onSceneSimulate();
+            else if (m_SceneState == SceneState::Simulate)
+                onSceneStop();
+        }
     }
 
     ImGui::PopStyleVar(2);
@@ -359,18 +384,38 @@ void EditorLayer::onEvent(Event &event)
 
 void EditorLayer::onScenePlay()
 {
+    if (m_SceneState == SceneState::Simulate)
+        onSceneStop();
+    
     m_SceneState = SceneState::Play;
     
-    m_ActiveScene= Scene::copy(m_Editorscene);
+    m_ActiveScene = Scene::copy(m_Editorscene);
     m_ActiveScene->onRuntimeStart();
 
     m_SceneHierarchyPanel.setContext(m_ActiveScene);
 }
 
+void EditorLayer::onSceneSimulate()
+{
+    if (m_SceneState == SceneState::Play)
+        onSceneStop();
+
+    m_SceneState = SceneState::Simulate;
+
+    m_ActiveScene = Scene::copy(m_Editorscene);
+    m_ActiveScene->onSimulationStart();
+
+    m_SceneHierarchyPanel.setContext(m_ActiveScene);    
+}
+
 void EditorLayer::onSceneStop()
 {
+    if (m_SceneState == SceneState::Play)
+        m_ActiveScene->onRuntimeStop();
+    else if (m_SceneState == SceneState::Simulate)
+        m_ActiveScene->onSimulationStop();
+
     m_SceneState = SceneState::Edit;
-    m_ActiveScene->onRuntimeStop();
     m_ActiveScene = m_Editorscene;
 
     m_SceneHierarchyPanel.setContext(m_ActiveScene);    
