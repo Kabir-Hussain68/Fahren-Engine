@@ -1,11 +1,14 @@
 #include "fhpch.h"
 #include "vulkanDevice.h"
 #include "vulkanContext.h"
+#include "vulkanUtils.h"
 
 #include <map>
 #include <set>
 
-#include <vulkan/vulkan.h>
+const std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
 
 VulkanDevice::VulkanDevice(Ref<VulkanContext> context)
     : m_Context(context)
@@ -16,19 +19,19 @@ VulkanDevice::VulkanDevice(Ref<VulkanContext> context)
 
 VulkanDevice::~VulkanDevice()
 {
-    vkDestroyDevice(device, nullptr);
+    vkDestroyDevice(m_Device, nullptr);
 }
 
 void VulkanDevice::pickPhysicalDevice()
 {
     uint32_t deviceCount = 0;
-    VkInstance m_Instance = m_Context->getVulkanInstance();
-    vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
+    VkInstance instance = m_Context->getVulkanInstance();
+    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
     FH_CORE_ASSERT(deviceCount != 0, "Failed to find GPU with Vulkan support!");
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     // Enumerating a map to select a gpu with the higest score (GPUScore > CPUScore)
     std::multimap<int, VkPhysicalDevice> candidates;
@@ -43,18 +46,16 @@ void VulkanDevice::pickPhysicalDevice()
         m_PhysicalDevice = candidates.rbegin()->second;
     else
         FH_CORE_ASSERT(false, "Failed to find usable GPU");
-
-
 }
 
 void VulkanDevice::createLogicalDevice()
 {
-    QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
+    m_QueueFamilyIndices = findQueueFamilies(m_PhysicalDevice);
 
     float queuePriority = 1.0f;
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    std::set<uint32_t> uniqueQueueFamilies = {m_QueueFamilyIndices.graphicsFamily.value(), m_QueueFamilyIndices.presentFamily.value()};
 
     for (uint32_t queueFamily : uniqueQueueFamilies)
     {
@@ -73,7 +74,8 @@ void VulkanDevice::createLogicalDevice()
     createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
     if (enableValidationLayers)
     {
@@ -85,15 +87,32 @@ void VulkanDevice::createLogicalDevice()
         createInfo.enabledLayerCount = 0;
     }
 
-    VkResult result = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &device);
+    VkResult result = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device);
     FH_CORE_ASSERT(result == VK_SUCCESS, "Could not create logical device!");
 
-    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
+    vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.graphicsFamily.value(), 0, &graphicsQueue);
+    vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.presentFamily.value(), 0, &presentQueue);
 }
 
 int VulkanDevice::rateDeviceSuitability(VkPhysicalDevice device)
 {
+    QueueFamilyIndices indices = findQueueFamilies(device);
+    if (!indices.isComplete())
+        return 0;
+
+    bool extensionSupported = checkDeviceExtensionSupport(device);
+    if (!extensionSupported)
+        return 0;
+
+    bool swapChainAdequete = false;
+    if (extensionSupported)
+    {
+        SwapChainSupportDetails swapChainSupport = VulkanUtils::querySwapChainSupport(device, m_Context->getVulkanSurface());
+        swapChainAdequete = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+    if (!swapChainAdequete)
+        return 0;
+
     VkPhysicalDeviceProperties deviceProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
     vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -116,10 +135,27 @@ int VulkanDevice::rateDeviceSuitability(VkPhysicalDevice device)
     return score;
 }
 
+bool VulkanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
+{
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    for (const auto& extension : availableExtensions)
+    {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
+
 QueueFamilyIndices VulkanDevice::findQueueFamilies(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices;
-    VkSurfaceKHR m_Surface = m_Context->getVulkanSurface();
+    VkSurfaceKHR surface = m_Context->getVulkanSurface();
 
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -131,7 +167,7 @@ QueueFamilyIndices VulkanDevice::findQueueFamilies(VkPhysicalDevice device)
     for (const auto& queueFamily : queueFamilies)
     {
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_Surface, &presentSupport);
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {

@@ -2,14 +2,9 @@
 
 #include "Engine/renderer/graphicsContext.h"
 
-struct GLFWwindow;
-struct VkInstance_T;
-struct VkSurfaceKHR_T;
-struct VkDebugUtilsMessengerEXT_T;
+#include <vulkan/vulkan.h>
 
-using VkInstance = VkInstance_T*;
-using VkSurfaceKHR = VkSurfaceKHR_T*;
-using VkDebugUtilsMessengerEXT = VkDebugUtilsMessengerEXT_T*;
+struct GLFWwindow;
 
 #ifdef FH_ENABLE_ASSERTS
     bool enableValidationLayers = true;
@@ -35,7 +30,7 @@ private:
 
 public:
     VulkanContext(GLFWwindow* windowHandle);
-    virtual ~VulkanContext();
+    ~VulkanContext();
 
     virtual void Init() override;
 

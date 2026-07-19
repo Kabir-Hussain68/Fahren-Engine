@@ -1,14 +1,7 @@
 #pragma once
 
 #include <optional>
-
-struct VkPhysicalDevice_T;
-struct VkDevice_T;
-struct VkQueue_T;
-
-using VkPhysicalDevice = VkPhysicalDevice_T*;
-using VkDevice = VkDevice_T*;
-using VkQueue = VkQueue_T*;
+#include <vulkan/vulkan.h>
 
 struct QueueFamilyIndices
 {
@@ -27,18 +20,25 @@ class VulkanDevice
 {
 private:
     VkPhysicalDevice m_PhysicalDevice;
-    VkDevice device;
+    VkDevice m_Device;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
+    QueueFamilyIndices m_QueueFamilyIndices;
     Ref<VulkanContext> m_Context;
 
     void pickPhysicalDevice();
     void createLogicalDevice();
 
     int rateDeviceSuitability(VkPhysicalDevice device);
+    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 public:
     VulkanDevice(Ref<VulkanContext> context);
-    virtual ~VulkanDevice();
+    ~VulkanDevice();
+
+    VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
+    VkDevice getDevice() const { return m_Device; }
+    uint32_t getGraphicsQueueFamily() { return m_QueueFamilyIndices.graphicsFamily.value(); } 
+    uint32_t getPresentQueueFamily() { return m_QueueFamilyIndices.presentFamily.value(); } 
 };
