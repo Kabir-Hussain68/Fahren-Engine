@@ -29,4 +29,8 @@ private:
 public:
     VulkanSwapChain(Ref<VulkanContext> context, Ref<VulkanDevice> device, uint32_t width, uint32_t height);
     ~VulkanSwapChain();
+
+    VkFormat getSwapChainImageFormat() { return m_SwapChainImageFormat; }
+    VkExtent2D getSwapChainExtent() { return m_SwapChainExtent; }
+    std::vector<VkImageView> getSwapChainImageViews() { return m_SwapChainImageViews; }
 };

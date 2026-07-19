@@ -15,12 +15,14 @@ VulkanSwapChain::VulkanSwapChain(Ref<VulkanContext> context, Ref<VulkanDevice> d
 VulkanSwapChain::~VulkanSwapChain()
 {
     VkDevice device = m_Device->getDevice();
-    vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
     
     for(auto imageView : m_SwapChainImageViews)
     {
         vkDestroyImageView(device, imageView, nullptr);
     }
+
+    vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
+    
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
