@@ -16,10 +16,13 @@ private:
     std::vector<VkFramebuffer> m_SwapChainFrameBuffers;
 
     void createFrameBuffers();
+    void cleanupFrameBuffers();
 
 public:
     VulkanFrameBuffer(Ref<VulkanDevice> device, Ref<VulkanSwapChain> swapChain, Ref<VulkanRenderPass> renderPass );
     ~VulkanFrameBuffer();
 
-    std::vector<VkFramebuffer> getSwapChainFrameBuffers() { return m_SwapChainFrameBuffers; }
+    void recreateFrameBuffers();
+
+    const std::vector<VkFramebuffer>& getSwapChainFrameBuffers() const { return m_SwapChainFrameBuffers; }
 };

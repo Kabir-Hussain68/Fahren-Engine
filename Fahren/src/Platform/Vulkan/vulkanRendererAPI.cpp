@@ -3,6 +3,6 @@
 
 #include <vulkan/vulkan.h>
 
-void VulaknRendererAPI::Init()
+void VulkanRenderAPI::Init()
 {
 }

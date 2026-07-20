@@ -14,6 +14,11 @@ VulkanSwapChain::VulkanSwapChain(Ref<VulkanContext> context, Ref<VulkanDevice> d
 
 VulkanSwapChain::~VulkanSwapChain()
 {
+    cleanupSwapChain();
+}
+
+void VulkanSwapChain::cleanupSwapChain()
+{
     VkDevice device = m_Device->getDevice();
     
     for(auto imageView : m_SwapChainImageViews)
@@ -22,7 +27,6 @@ VulkanSwapChain::~VulkanSwapChain()
     }
 
     vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
-    
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
@@ -159,4 +163,16 @@ void VulkanSwapChain::createImageViews()
         FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Swapchain Image view");
     }
 
+}
+
+void VulkanSwapChain::recreateSwapChain(uint32_t width, uint32_t height)
+{
+    VkDevice device = m_Device->getDevice();
+
+    FH_CORE_ASSERT(width > 0 && height > 0, "Swapchain recreation called at 0, 0");
+
+    vkDeviceWaitIdle(device);
+
+    createSwapChain(width, height);
+    createImageViews();
 }

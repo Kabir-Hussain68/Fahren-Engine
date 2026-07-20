@@ -19,5 +19,5 @@ public:
     VulkanRenderPass(Ref<VulkanDevice> device, Ref<VulkanSwapChain> swapChain);
     ~VulkanRenderPass();
 
-    VkRenderPass getRenderPass() { return m_RenderPass; }
+    VkRenderPass getRenderPass() const { return m_RenderPass; }
 };

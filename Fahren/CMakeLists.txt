@@ -115,6 +115,7 @@ target_include_directories(FahrenEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/stb_image
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/miniaudio
     ${CMAKE_CURRENT_SOURCE_DIR}/requisites/box2d/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/requisites/VulkanMemoryAllocator
 )
 
 target_precompile_headers(FahrenEngine PRIVATE src/fhpch.h)

@@ -34,6 +34,6 @@ public:
 
     virtual void Init() override;
 
-    VkInstance getVulkanInstance() { return m_Instance; }
-    VkSurfaceKHR getVulkanSurface() { return m_Surface; }
+    VkInstance getVulkanInstance() const { return m_Instance; }
+    VkSurfaceKHR getVulkanSurface() const { return m_Surface; }
 };

@@ -12,17 +12,17 @@ class VulkanCommandBuffer
 private:
     Ref<VulkanDevice> m_Device;
     VkCommandPool m_CommandPool;
-    VkCommandBuffer m_CommandBuffer;
+    std::vector<VkCommandBuffer> m_CommandBuffers;
 
     void createCommandPool();
-    void createCommandBuffer();
+    void createCommandBuffer(uint32_t frameIndex);
 
-    void recordCommandBuffer(VkRenderPass renderPass, VkFramebuffer framebuffer, VkExtent2D extent, uint32_t imageIndex);
-    void endRecording();
+    void recordCommandBuffer(uint32_t frameIndex, VkRenderPass renderPass, VkFramebuffer framebuffer, VkExtent2D extent);
+    void endRecording(uint32_t frameIndex);
 
 public:
-    VulkanCommandBuffer(Ref<VulkanDevice> device);
+    VulkanCommandBuffer(Ref<VulkanDevice> device, uint32_t frameIndex);
     ~VulkanCommandBuffer();
 
-    VkCommandBuffer getCommandBuffer() { return m_CommandBuffer; }
+    VkCommandBuffer getCommandBuffer(uint32_t frameIndex) const { return m_CommandBuffers[frameIndex]; }
 };

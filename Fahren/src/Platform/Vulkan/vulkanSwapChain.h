@@ -26,11 +26,15 @@ private:
     void createSwapChain(uint32_t width, uint32_t height);
     void createImageViews();
 
+    void recreateSwapChain(uint32_t width, uint32_t height);
+
 public:
     VulkanSwapChain(Ref<VulkanContext> context, Ref<VulkanDevice> device, uint32_t width, uint32_t height);
     ~VulkanSwapChain();
 
-    VkFormat getSwapChainImageFormat() { return m_SwapChainImageFormat; }
-    VkExtent2D getSwapChainExtent() { return m_SwapChainExtent; }
-    std::vector<VkImageView> getSwapChainImageViews() { return m_SwapChainImageViews; }
+    void cleanupSwapChain();
+
+    VkFormat getSwapChainImageFormat() const { return m_SwapChainImageFormat; }
+    VkExtent2D getSwapChainExtent() const { return m_SwapChainExtent; }
+    const std::vector<VkImageView>& getSwapChainImageViews() const { return m_SwapChainImageViews; }
 };

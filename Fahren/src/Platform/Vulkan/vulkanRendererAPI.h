@@ -4,7 +4,7 @@
 
 class CommandBuffer;
 
-class VulaknRendererAPI : public RendererAPI
+class VulkanRenderAPI : public RendererAPI
 {
 private:
     Ref<CommandBuffer> m_ActiveCommandBuffer;

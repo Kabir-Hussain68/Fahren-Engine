@@ -39,6 +39,6 @@ public:
 
     VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
     VkDevice getDevice() const { return m_Device; }
-    uint32_t getGraphicsQueueFamily() { return m_QueueFamilyIndices.graphicsFamily.value(); } 
-    uint32_t getPresentQueueFamily() { return m_QueueFamilyIndices.presentFamily.value(); } 
+    uint32_t getGraphicsQueueFamily() const { return m_QueueFamilyIndices.graphicsFamily.value(); } 
+    uint32_t getPresentQueueFamily() const { return m_QueueFamilyIndices.presentFamily.value(); } 
 };

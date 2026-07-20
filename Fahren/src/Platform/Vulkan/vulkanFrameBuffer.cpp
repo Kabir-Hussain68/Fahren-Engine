@@ -13,11 +13,14 @@ VulkanFrameBuffer::VulkanFrameBuffer(Ref<VulkanDevice> device, Ref<VulkanSwapCha
 
 VulkanFrameBuffer::~VulkanFrameBuffer()
 {
-    VkDevice device = m_Device->getDevice();
-    for (auto framebuffer : m_SwapChainFrameBuffers) 
-    {
-        vkDestroyFramebuffer(device, framebuffer, nullptr);
-    }
+    cleanupFrameBuffers();
+}
+
+void VulkanFrameBuffer::recreateFrameBuffers()
+{
+    cleanupFrameBuffers();
+    m_SwapChainFrameBuffers.clear();
+    createFrameBuffers();
 }
 
 void VulkanFrameBuffer::createFrameBuffers()
@@ -48,4 +51,13 @@ void VulkanFrameBuffer::createFrameBuffers()
         FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to create framebuffer");
     }
 
+}
+
+void VulkanFrameBuffer::cleanupFrameBuffers()
+{
+    VkDevice device = m_Device->getDevice();
+    for (auto framebuffer : m_SwapChainFrameBuffers) 
+    {
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
 }

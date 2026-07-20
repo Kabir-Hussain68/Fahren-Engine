@@ -4,11 +4,11 @@
 #include "vulkanDevice.h"
 
 
-VulkanCommandBuffer::VulkanCommandBuffer(Ref<VulkanDevice> device)
+VulkanCommandBuffer::VulkanCommandBuffer(Ref<VulkanDevice> device, uint32_t frameIndex)
     : m_Device(device)
 {
     createCommandPool();
-    createCommandBuffer();
+    createCommandBuffer(frameIndex);
 }
 
 VulkanCommandBuffer::~VulkanCommandBuffer()
@@ -32,28 +32,33 @@ void VulkanCommandBuffer::createCommandPool()
     FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command pool");
 }
 
-void VulkanCommandBuffer::createCommandBuffer()
+void VulkanCommandBuffer::createCommandBuffer(uint32_t frameIndex)
 {
     VkDevice device = m_Device->getDevice();
+
+    m_CommandBuffers.resize(frameIndex);
     
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = m_CommandPool;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
+    allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-    VkResult result = vkAllocateCommandBuffers(device, &allocInfo, &m_CommandBuffer);
-    FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffer");
+    VkResult result = vkAllocateCommandBuffers(device, &allocInfo, m_CommandBuffers.data());
+    FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers");
 }
 
-void VulkanCommandBuffer::recordCommandBuffer(VkRenderPass renderPass, VkFramebuffer framebuffer, VkExtent2D extent, uint32_t imageIndex)
+void VulkanCommandBuffer::recordCommandBuffer(uint32_t frameIndex, VkRenderPass renderPass, VkFramebuffer framebuffer, VkExtent2D extent)
 {
+    VkCommandBuffer commandBuffer = m_CommandBuffers[frameIndex];
+    vkResetCommandBuffer(commandBuffer, 0);
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;
     beginInfo.pInheritanceInfo = nullptr;
 
-    VkResult result = vkBeginCommandBuffer(m_CommandBuffer, &beginInfo);
+    VkResult result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
     FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording command buffer");
 
     VkRenderPassBeginInfo renderPassInfo{};
@@ -67,13 +72,15 @@ void VulkanCommandBuffer::recordCommandBuffer(VkRenderPass renderPass, VkFramebu
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
 
-    vkCmdBeginRenderPass(m_CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void VulkanCommandBuffer::endRecording()
+void VulkanCommandBuffer::endRecording(uint32_t frameIndex)
 {
-    vkCmdEndRenderPass(m_CommandBuffer);
+    VkCommandBuffer commandBuffer = m_CommandBuffers[frameIndex];
 
-    VkResult result = vkEndCommandBuffer(m_CommandBuffer);
+    vkCmdEndRenderPass(commandBuffer);
+
+    VkResult result = vkEndCommandBuffer(commandBuffer);
     FH_CORE_ASSERT(result == VK_SUCCESS, "Failed to record command buffer!");
 }
